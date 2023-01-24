@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png" />
+  <link rel="stylesheet" href="css/common.css" />
+
+  <title>2022 VR Class</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/resonance-audio/build/resonance-audio.min.js"></script>
+<!--   <script src="js/third-party/resonance-audio.min.js"></script> -->
+  <!-- <script src="https://corelink.hpc.nyu.edu/client/browser/corelink.browser.lib.js"></script> -->
+  <script src="js/third-party/corelink.browser.lib.js"></script>
+  <!-- this is the library-->
+  <!-- <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
+  <!-- <script src="js/third-party/plotly-latest.min.js"></script> -->
+  <script src="js/buffer-browser.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div id=videoElement></div>
+  <canvas id=anidrawCanvas width=1024 height=960  style="position:absolute;left:-2000px;"></canvas>
+
+  <header id=header>
+    <details open>
+      <summary>Welcome to the FutureClassroom!!</summary>
+      <dev id=messages>&nbsp;</dev>
+        <!-- <a class="back" href="./">Back</a> -->
+        <br>
+      <dev id=sceneButtons>&nbsp;</dev>
+    </details>
+  </header>
+
+  <div id="audios">
+    <!-- local audio -->
+    <audio id="local_webrtc" autoplay></audio>
+  </div>
+  
+  <script type="module" src="/js/main.js"></script>
+
+</body>
+
+</html>

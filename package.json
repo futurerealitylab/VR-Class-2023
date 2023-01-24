@@ -1,0 +1,34 @@
+{
+  "name": "immersive-presentation",
+  "version": "1.0.0",
+  "description": "2022 VR Class",
+  "main": "server.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "webxr-polyfill": "^2.0.3",
+    "ws": "^7.4.6",
+    "yargs-parser": ">=13.1.2"
+  },
+  "scripts": {
+    "test": "node server.js -env local",
+    "start": "node server.js -env local",
+    "format": "prettier --write \"**/*.{js,json,md,html,css}\"",
+    "convert": "gltf-import-export"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/snowymo/immersive-presentation.git"
+  },
+  "author": "Zhenyi He",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/snowymo/immersive-presentation/issues"
+  },
+  "homepage": "https://github.com/snowymo/immersive-presentation#readme",
+  "devDependencies": {
+    "gltf-import-export": "^1.0.16",
+    "prettier": "2.2.1"
+  }
+}

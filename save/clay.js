@@ -316,7 +316,7 @@ let drawMesh = (mesh, materialId, isTriangleMesh, textureSrc) => {
          gl.bindTexture(gl.TEXTURE_2D, textures[textureSrc]);
       }
    }
-   if this.views.length == 1) {
+   if (this.views.length == 1) {
       setUniform('1i', 'uSampler', 0);                            // SPECIFY TEXTURE INDEX.
       setUniform('1f', 'uTexture', isTexture(textureSrc)? 1 : 0); // ARE WE RENDERING A TEXTURE?
       if (mesh.length > 0) {

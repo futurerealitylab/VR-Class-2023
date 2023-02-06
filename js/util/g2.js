@@ -182,7 +182,7 @@ function G2() {
 	       cursor = Math.min(cursor + 1, text.length);
 	       break;
 	    case 'Backspace':
-	       text = text.substring(0, cursor) + text.substring(cursor + 1, text.length);
+	       text = text.substring(0, cursor - 1) + text.substring(cursor, text.length);
 	       cursor--;
 	       break;
 	    default:
@@ -255,10 +255,9 @@ function G2() {
    this.computeUVZ = objMatrix => {
       if (! window.vr) {
          let w = screen.width, h = screen.height;
-         let uvz = cg.mHitRect(cg.mMultiply(cg.mInverse(views[0].viewMatrix),
-                                            cg.mAimZ([.965*(1-mouseX/(w/2)),
-					              .965*(mouseY/(w/2)-h/w),5])), objMatrix);
-         return uvz ? [1-uvz[0],uvz[1],uvz[2]] : null;
+         return cg.mHitRect(cg.mMultiply(cg.mInverse(views[0].viewMatrix),
+                                         cg.mAimZ([.965*(1-mouseX/(w/2)),
+			                           .965*(mouseY/(w/2)-h/w),5])), objMatrix);
       }
       else {
          let L = lcb.hitRect(objMatrix);

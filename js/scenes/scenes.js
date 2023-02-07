@@ -18,7 +18,6 @@ export default () => {
          { name: "DemoTwoCubes"      , path: "./demoTwoCubes.js"      },
          { name: "DemoTrianglesMesh" , path: "./demoTrianglesMesh.js" },
          { name: "DemoOpacity"       , path: "./demoOpacity.js"       },
-         { name: "DemoHUD.js"        , path: "./demoHUD.js"           },
       ]
    };
 }

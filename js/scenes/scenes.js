@@ -13,6 +13,7 @@ export default () => {
          { name: "DemoKP0"     , path: "./demoKP0.js"     },
          { name: "DemoKP1"     , path: "./demoKP1.js"     },
          { name: "DemoKP2"     , path: "./demoKP2.js"     },
+         { name: "DemoCanvas"  , path: "./demoCanvas.js"  },
       ]
    };
 }

@@ -14,7 +14,7 @@ export default () => {
          { name: "DemoKP1"     , path: "./demoKP1.js"     },
          { name: "DemoKP2"     , path: "./demoKP2.js"     },
          { name: "hw1robot"     , path: "./hw1robot.js"     },
-         { name: "hw2robot"     , path: "./hw2robot.js"     },
+         { name: "hw2controller"     , path: "./hw2controller.js"     },
       ]
    };
 }

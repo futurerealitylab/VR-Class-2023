@@ -1,31 +1,129 @@
+import * as cg from "../render/core/cg.js";
 import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
 
 export const init = async model => {
-   // let cube = model.add('cube').texture('../media/textures/brick.png');
-   // let tube1 = model.add('tubeX').color(1,0,0);
-   // let tube2 = model.add('tubeY').color(0,1,0);
-   // let tube3 = model.add('tubeZ').color(0,0,1);
-   // let ball = model.add('sphere').color(1,1,0);
+   
+   
+   let robot = model.add().color(.7,.7,.7).move(0,1.5,0);
+   //let base  = robot.add();
+   let head  = robot.add('cube').scale(0.07);
+   let trunk = robot.add();
+   
+   let neck  = trunk.add('sphere').move(0,-0.15,0).scale(0.03);;
+   let leftS = neck.add('sphere').move(-3,0,0);
+   let leftE = leftS.add('sphere').move(-3,3,0);
 
-   let leye = model.add();
-   leye.add('sphere');
-   leye.add('sphere');
+   let rightS = neck.add('sphere').move(3,0,0);
+   let rightE = rightS.add('sphere').move(4,3,0);
+   
 
-   let reye = model.add();
-   reye.add('sphere');
-   reye.add('sphere');
-   reye.identity().move(3,0,0);
+   // SPINE 
+   let spine = trunk.add('sphere').move(0,-0.3,0).scale(0.03);
+   
+   
+   let crotch  = trunk.add('sphere').move(0,-0.45,0).scale(0.03);;
+   let leftG = crotch.add('sphere').move(-3,0,0);
+   let leftK = leftG.add('sphere').move(0,-5,0);
 
-   model.move(0,1.5,0).scale(.02).animate(() => {
-      leye.child(1).identity().color(0,0,0)
-                   .move(0,0,1)
-                   .scale(0.5)
-                   .scale(1, Math.abs(Math.sin(model.time)), 1);;                     
-      reye.child(1).identity().color(0,0,0)
-                   .move(0,0,1)
-                   .scale(0.5)
-                   .scale(1, Math.abs(Math.sin(model.time)), 1);;    
+   let rightG = crotch.add('sphere').move(3,0,0);
+   let rightK = rightG.add('sphere').move(0,-5,0);
+
+
+   // EYES
+   let eyes = head.add();
+   
+   let leye = eyes.add('sphere').move(-1.5,0,0);
+   let reye = eyes.add('sphere').move(1.5,0,0);
+   
+   // PUPILS
+   let leftEyePupil  = leye.add('sphere').color(0,0,0).scale(0.5);
+   let rightEyePupil = reye.add('sphere').color(0,0,0).scale(0.5);
+   
+   eyes.move(0,0.5,0.9).scale(0.27);
+
+   // NOSE
+   let nose = head.add();
+   nose.add('tubeZ').move(0,-0.1,1).color(.5,.5,.5).scale(0.24);
+
+   // MOUTH
+   let mouth = head.add('cube').move(0,-0.6,1).scale(.5,.05,.1).color(0.5,0.3,0.3);
+
+   
+   let limb = (a,b,c,r) => {
+      if (r === undefined) r = 0.012;
+      a.color(.7,.7,.7);
+      let B = b.getGlobalMatrix().slice(12, 15);
+      let C = c.getGlobalMatrix().slice(12, 15);
+      a.setMatrix(cg.mMultiply(cg.mTranslate(cg.mix(B,C,.5)),
+                  cg.mMultiply(cg.mAimZ(cg.subtract(C,B), [0,0,1]),
+		               cg.mScale(r,r,.5*cg.distance(B,C)))));
+   }
+
+   let nh = model.add('tubeZ');
+   let nS = model.add('tubeZ');
+   let sC = model.add('tubeZ');
+
+   let nLS = model.add('tubeZ');
+   let nRS = model.add('tubeZ');
+
+   let sLE = model.add('tubeZ');
+   let sRE = model.add('tubeZ');
+
+   let cLG = model.add('tubeZ');
+   let cRG = model.add('tubeZ');
+   
+   let gLK = model.add('tubeZ');
+   let gRK = model.add('tubeZ');
+   
+
+   robot.animate(() => {
+      leftEyePupil.identity().move(0,0,0.9*Math.abs(Math.sin(model.time))).scale(0.5);                 
+      rightEyePupil.identity().move(0,0,0.9*Math.abs(Math.sin(model.time))).scale(0.5);
+      
+      limb(nh, neck, head);
+      limb(nS, neck, spine);
+      limb(sC, spine, crotch);
+
+      limb(nLS, neck, leftS);
+      limb(nRS, neck, rightS);
+
+      limb(sLE, leftS, leftE);
+      limb(sRE, rightS, rightE);
+
+
+      limb(cLG, crotch, leftG);
+      limb(cRG, crotch, rightG);
+      
+      limb(gLK, leftG, leftK);
+      limb(gRK, rightG, rightK);
+
+      let wave = 3* Math.sin(3*model.time);
+      leftE.identity().turnZ(-.1 * wave).move(-3,3,0);
+      rightE.identity().turnZ(-.1 * wave).move(3,3,0);
+      
+      let walk =  Math.sin(5*model.time);
+      leftK.identity().turnX(walk).move(0,-5,0);
+      rightK.identity().turnX(-walk).move(0,-5,0);
+
+      robot.turnY(0.005*Math.sin(model.time));
+      
    });
+
+   
+   // -------
+   // let leye = model.add();
+   
+   
+   // model.move(0,1.5,0).scale(.02).animate(() => {
+   //    leye.child(1).identity().color(0,0,0)
+   //                 .move(0,0,1)
+   //                 .scale(0.5)
+   //                 .scale(1, Math.abs(Math.sin(model.time)), 1);                     
+   //    reye.child(1).identity().color(0,0,0)
+   //                 .move(0,0,1)
+   //                 .scale(0.5)
+   //                 .scale(1, Math.abs(Math.sin(model.time)), 1);    
+   // });
    
    // let eye = model.add();
    // eye.add('sphere');

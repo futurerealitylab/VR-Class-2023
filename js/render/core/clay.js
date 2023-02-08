@@ -2202,18 +2202,18 @@ let frameCount = 0;
 
       // DRAW THE TABLE
 
-      if (isTable) {
-         let inches = 0.0254,
-             radius     = (70 + 11/16) * inches / 2,
-             height     = 29 * inches,
-             thickness  = 0.75 * inches,
-             legRadius  = 4 * inches / 2,
-             baseRadius = 24 * inches / 2;
+      // if (isTable) {
+      //    let inches = 0.0254,
+      //        radius     = (70 + 11/16) * inches / 2,
+      //        height     = 29 * inches,
+      //        thickness  = 0.75 * inches,
+      //        legRadius  = 4 * inches / 2,
+      //        baseRadius = 24 * inches / 2;
 
-         draw(cylinderYMesh, '40,16,8', [0,height-thickness,0], null, [radius    ,thickness,radius    ]);
-         draw(cylinderYMesh, '40,16,8', [0,height/2        ,0], null, [legRadius ,height/2 ,legRadius ]);
-         draw(cylinderYMesh, '40,16,8', [0,thickness       ,0], null, [baseRadius,thickness,baseRadius]);
-      }
+      //    draw(cylinderYMesh, '40,16,8', [0,height-thickness,0], null, [radius    ,thickness,radius    ]);
+      //    draw(cylinderYMesh, '40,16,8', [0,height/2        ,0], null, [legRadius ,height/2 ,legRadius ]);
+      //    draw(cylinderYMesh, '40,16,8', [0,thickness       ,0], null, [baseRadius,thickness,baseRadius]);
+      // }
 
       // DRAW REMOTE OBJ
       this.renderSyncObj(remoteObjRoot);

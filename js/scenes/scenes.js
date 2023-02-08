@@ -15,6 +15,7 @@ export default () => {
          { name: "DemoKP2"     , path: "./demoKP2.js"     },
          { name: "DemoCanvas"  , path: "./demoCanvas.js"  },
          { name: "DemoA1"      , path: "./demoA1.js"     },
+         { name: "DemoA2"      , path: "./demoA2.js"     },
       ]
    };
 }

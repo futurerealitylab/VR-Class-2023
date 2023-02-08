@@ -7,7 +7,7 @@ let radius = 0.1;
 
 export const init = async model => {
 
-   // CREATE THE BOX.
+   // CREATE THE BALL.
 
    let ball = model.add('sphere');
 

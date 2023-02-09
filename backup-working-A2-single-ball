@@ -4,103 +4,112 @@ import { controllerMatrix, buttonState, joyStickState, time } from "../render/co
 
 
 let leftTriggerPrev = false;
-//let MP = cg.mTranslate(0,1,.5);
+let rightTriggerPrev = false;
+
+let MP = cg.mTranslate(0,1,.5);
 let A = [0,0,0];
+let MA = cg.mIdentity();
+let cml = [];
 let prevPosition = 0;
 let velocity = 0;
-let allBalls = [];
+let lockVelocity = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+let gravity      = [0,0,0,0,0,0,0,0,0,0,0,0,0,0.01,0,0];
+let objectThrown = false;
+let stop = false;
+let enableGravity = false;
 
 export const init = async model => {
 
    // CREATE THE BALL.
    let ballScale = 1;
-   let firstBall = model.add('sphere').scale(ballScale);
-   allBalls.push({
-      ball: firstBall,
-      inMotion: false,
-      lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      MP: cg.mTranslate(0,1,.5),
-      A: [0,0,0],
-      B: [0,0,0]
-   });
-   
+   let ball = model.add('sphere').scale(ballScale);
 
    // FUNCTION TO RETURN TRUE IF A POINT IS INSIDE THE BALL, OTHERWISE FALSE.
-   let isInBall = (p) => {
+   let isInBall = p => {
       // FIRST TRANSFORM THE POINT BY THE INVERSE OF THE BALL'S MATRIX.
-      for (let i = 0; i < allBalls.length; i++) {
-         let currBall = allBalls[i].ball;
-         let q = cg.mTransform(cg.mInverse(currBall.getMatrix()), p);
-         // THEN WE JUST NEED TO SEE IF THE RESULT IS INSIDE A UNIT CUBE.
-         if(Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2]) < ballScale){
-            return i;
-         }
-      }
-      return -1;
+      let q = cg.mTransform(cg.mInverse(ball.getMatrix()), p);
+
+      // THEN WE JUST NEED TO SEE IF THE RESULT IS INSIDE A UNIT CUBE.
+      return Math.sqrt(q[0]*q[0] + q[1]*q[1] + q[2]*q[2]) < ballScale;
    }
 
+  
+
+   let roundCM = (m) => {
+      let len = m.length;
+      let controllerM = new Array(len);
+      while(len--){ 
+         controllerM[len] = m[len].toFixed(2); 
+      }
+      return controllerM;
+   }
+
+   let mle = controllerMatrix.left;
+   let obj3 = model.add('cube').move(2,0.93,-3).scale(1,1,0.0001).texture(() => {
+      g2.setColor('black');
+      g2.textHeight(.05);
+      g2.fillText('Time : ' + Math.round(model.time * 100)/100, .5, .9, 'center');
+      g2.fillText('Curr Velocity : ' + roundCM(velocity), .5, .7, 'center');
+      g2.fillText('Ball Position : ' + roundCM(MP.slice(12,15)), .5, .6, 'center');
+      g2.fillText('Lock Velocity : ' + roundCM(lockVelocity).slice(12,15), .5, .5, 'center');
+      g2.fillText('Velocity Shape mle : ' + mle.length, .5, .4, 'center');
+      g2.fillText('Velocity Shape F : ' + lockVelocity.length, .5, .3, 'center');
+      g2.fillText('STOP: ' + stop, .5, .2, 'center');
+      g2.fillText('THROWN: ' + objectThrown, .5, .1, 'center');
+      
+      
+   });
 
    model.animate(() => {
 
-      // FETCH THE MATRIXES FOR THE LEFT CONTROLLER, GET POSITION AND CALCULATE VELOCITY
+      // FETCH THE MATRIXES FOR THE LEFT AND RIGHT CONTROLLER.
       let ml = controllerMatrix.left;
+      let mr = controllerMatrix.right;
       let currentPosition = ml.slice(12,15);
+      
+      // EXTRACT THE LOCATION OF EACH CONTROLLER FROM ITS MATRIX,
+      // AND USE IT TO SEE WHETHER THAT CONTROLLER IS INSIDE THE BALL.
       velocity = cg.subtract(currentPosition, prevPosition);
-      let ballIndex  = isInBall(ml.slice(12,15));
 
-      let isLeftInBall = ballIndex !== -1 ;
-      
-      
-      // IF NEITHER CONTROLLER IS INSIDE ANY BALL, COLOR ALL THE BALLS WHITE.
-      if (! isLeftInBall){
-         for (let i = 0; i < allBalls.length; i++) {
-            allBalls[i].ball.color(1,1,1);
-         }         
-      }
+      let isLeftInBall  = isInBall(ml.slice(12,15));
+      let isRightInBall = isInBall(mr.slice(12,15));
+
+      // IF NEITHER CONTROLLER IS INSIDE THE BALL, COLOR THE BALL WHITE.
+      if (! isLeftInBall && ! isRightInBall)
+         ball.color(1,1,1);
 
       // IF THE LEFT CONTROLLER IS INSIDE THE BALL
       if (isLeftInBall) {
 
          // COLOR THE BALL PINK.
-         allBalls[ballIndex].ball.color(1,.5,.5);
+         ball.color(1,.5,.5);
 
          // IF THE LEFT TRIGGER IS SQUEEZED
          let leftTrigger = buttonState.left[0].pressed;
 
          if(leftTriggerPrev && !leftTrigger){
             let r = 3;
-            allBalls[ballIndex].lockVelocity = [0,0,0,0,0,0,0,0,0,0,0,0, 3*velocity[0], 3*velocity[1], 3*velocity[2],0];
-            allBalls[ballIndex].inMotion = true;
-            let newBall = model.add('sphere').scale(ballScale);
-            allBalls.push({
-               ball: newBall,
-               inMotion: false,
-               lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-               MP: cg.mTranslate(0,1,.5),
-               A: [0,0,0],
-               B: [0,0,0]
-            });
+            lockVelocity = [0,0,0,0,0,0,0,0,0,0,0,0, 3*velocity[0], 3*velocity[1], 3*velocity[2],0];
+            objectThrown = true;
          }
 
          if (leftTrigger) {
             // COLOR THE BALL RED AND MOVE THE BALL.
-            // for (let i = 0; i < allBalls.length; i++) {
-            //    allBalls[i].ball.color(1,0,0);
-            // }
-            allBalls[ballIndex].ball.color(1,0,0);
-            allBalls[ballIndex].B = ml.slice(12,15);
+            ball.color(1,0,0);
+            let B = ml.slice(12,15);
             if (! leftTriggerPrev){         // ON LEFT DOWN EVENT:
-               allBalls[ballIndex].A = allBalls[ballIndex].B;                      // INITIALIZE PREVIOUS LOCATION.
+               //ball.color(1,0,0);
+               A = B;                      // INITIALIZE PREVIOUS LOCATION.
             }
             else{
                //ball.color(0,1,0);
-               allBalls[ballIndex].MP = cg.mMultiply(cg.mTranslate(cg.subtract(allBalls[ballIndex].B, allBalls[ballIndex].A)), allBalls[ballIndex].MP);
+               MP = cg.mMultiply(cg.mTranslate(cg.subtract(B, A)), MP);
             }
 
-            allBalls[ballIndex].A = allBalls[ballIndex].B;                         // REMEMBER PREVIOUS LOCATION.
+            A = B;                         // REMEMBER PREVIOUS LOCATION.
          }
          leftTriggerPrev = leftTrigger;
-      } 
+      }
 
      
 
@@ -114,76 +123,53 @@ export const init = async model => {
       let roomZ = 4.5;
       
       
-      for (let i = 0; i < allBalls.length; i++) {
+      
       // Velocity decay
-         if(allBalls[i].inMotion){
-            // BOUNCING
-            // Check if ball it hits the wall in X - Index 12
-            if(allBalls[i].MP[12] > roomX || allBalls[i].MP[12] < -roomX){
-               allBalls[i].lockVelocity[12] = -allBalls[i].lockVelocity[12];
-            }
-            // Check if ball it hits the wall in Y - Index 13
-            if(allBalls[i].MP[13] > roomY1 || allBalls[i].MP[13] < roomY2){
-               allBalls[i].lockVelocity[13] = -allBalls[i].lockVelocity[13];
-            }
-            // Check if ball it hits the wall in Z - Index 14
-            if(allBalls[i].MP[14] > roomZ || allBalls[i].MP[14] < -roomZ){
-               allBalls[i].lockVelocity[14] = -allBalls[i].lockVelocity[14];
-            }
+      if(objectThrown){
 
-            // Try doing gravity here only
-            let oldMagnitude = Math.sqrt(
-               allBalls[i].lockVelocity[12]*allBalls[i].lockVelocity[12] +
-               allBalls[i].lockVelocity[13]*allBalls[i].lockVelocity[13] +
-               allBalls[i].lockVelocity[14]*allBalls[i].lockVelocity[14]
-               )
-            let magnitude = oldMagnitude;
-            if(magnitude > 0.0001){
-               magnitude -= 0.0001;
-            } else {
-               magnitude = 0;
-               allBalls[i].inMotion = false;
-               
-            }
-            allBalls[i].lockVelocity[12] *= magnitude/ oldMagnitude;
-            allBalls[i].lockVelocity[13] *= magnitude/ oldMagnitude;
-            allBalls[i].lockVelocity[14] *= magnitude/ oldMagnitude;
-
-            // Add gravity
-            allBalls[i].lockVelocity[13] -= 0.001
-            allBalls[i].MP = cg.add( allBalls[i].MP, allBalls[i].lockVelocity)
-            //MP = cg.subtract( MP,gravity)  
+         // BOUNCING
+         // Check if ball it hits the wall in X - Index 12
+         if(MP[12] > roomX || MP[12] < -roomX){
+            lockVelocity[12] = -lockVelocity[12];
          }
-         allBalls[i].ball.setMatrix(allBalls[i].MP).scale(.1);
+         // Check if ball it hits the wall in Y - Index 13
+         if(MP[13] > roomY1 || MP[13] < roomY2){
+            lockVelocity[13] = -lockVelocity[13];
+         }
+         // Check if ball it hits the wall in Z - Index 14
+         if(MP[14] > roomZ || MP[14] < -roomZ){
+            lockVelocity[14] = -lockVelocity[14];
+         }
+
+               
+         // Try doing gravity here only
+         let oldMagnitude = Math.sqrt(lockVelocity[12]*lockVelocity[12] +lockVelocity[13]*lockVelocity[13] +lockVelocity[14]*lockVelocity[14])
+         let magnitude = oldMagnitude;
+         if(magnitude > 0.0001){
+            magnitude -= 0.0001;
+         } else {
+            magnitude = 0;
+            objectThrown = false;
+            
+         }
+         lockVelocity[12] *= magnitude/ oldMagnitude;
+         lockVelocity[13] *= magnitude/ oldMagnitude;
+         lockVelocity[14] *= magnitude/ oldMagnitude;
+
+         // Add gravity
+         lockVelocity[13] -= 0.001
+         MP = cg.add( MP, lockVelocity)
+         //MP = cg.subtract( MP,gravity)  
       }
+
+      // if(MP[13] < roomY2 && Math.abs(lockVelocity[13]) < 0.0001){
+      //    MP[13] = roomY2;
+      // }
+      
+      ball.setMatrix(MP).scale(.1);
       
    });   
 }
-
-
-// let roundCM = (m) => {
-//    let len = m.length;
-//    let controllerM = new Array(len);
-//    while(len--){ 
-//       controllerM[len] = m[len].toFixed(2); 
-//    }
-//    return controllerM;
-// }
-// let mle = controllerMatrix.left;
-// let obj3 = model.add('cube').move(2,0.93,-3).scale(1,1,0.0001).texture(() => {
-//    g2.setColor('black');
-//    g2.textHeight(.05);
-//    g2.fillText('Time : ' + Math.round(model.time * 100)/100, .5, .9, 'center');
-//    g2.fillText('Curr Velocity : ' + roundCM(velocity), .5, .7, 'center');
-//    g2.fillText('Ball Position : ' + roundCM(MP.slice(12,15)), .5, .6, 'center');
-//    g2.fillText('Lock Velocity : ' + roundCM(lockVelocity).slice(12,15), .5, .5, 'center');
-//    g2.fillText('Velocity Shape mle : ' + mle.length, .5, .4, 'center');
-//    g2.fillText('Velocity Shape F : ' + lockVelocity.length, .5, .3, 'center');
-//    g2.fillText('STOP: ' + stop, .5, .2, 'center');
-//    g2.fillText('THROWN: ' + objectThrown, .5, .1, 'center');
-   
-   
-// });
       
     // Adding air resistance
          // lockVelocity[12] += Math.abs(lockVelocity[12]) * (lockVelocity[12] > 0  && lockVelocity[12] !== 0 ? -0.0001 : 0.0001);

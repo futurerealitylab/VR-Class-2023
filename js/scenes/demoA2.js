@@ -4,7 +4,10 @@ import { controllerMatrix, buttonState, joyStickState, time } from "../render/co
 
 
 let leftTriggerPrev = false;
-//let MP = cg.mTranslate(0,1,.5);
+let MPR = cg.mTranslate(-0.5,1,.5);
+let MPG = cg.mTranslate(0,1,.5);
+let MPB = cg.mTranslate(0.5,1,.5);
+
 let A = [0,0,0];
 let prevPosition = 0;
 let velocity = 0;
@@ -14,14 +17,46 @@ export const init = async model => {
 
    // CREATE THE BALL.
    let ballScale = 1;
-   let firstBall = model.add('sphere').scale(ballScale);
+
+   let redBall = model.add('sphere').scale(ballScale);
+   let greenBall = model.add('sphere').scale(ballScale);
+   let blueBall = model.add('sphere').scale(ballScale);
+
+   //let pickerBalls = [redBall, greenBall, blueBall]
+
+   //let firstBall = model.add('sphere').scale(ballScale);
+   
    allBalls.push({
-      ball: firstBall,
+      ball: redBall,
       inMotion: false,
       lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-      MP: cg.mTranslate(0,1,.5),
+      MP: MPR,
       A: [0,0,0],
-      B: [0,0,0]
+      B: [0,0,0],
+      scolor: [1,0.5,0.5],
+      color: [1,0,0]
+   });
+
+   allBalls.push({
+      ball: greenBall,
+      inMotion: false,
+      lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      MP: MPG,
+      A: [0,0,0],
+      B: [0,0,0],
+      scolor: [0.5,1,0.5],
+      color: [0,1,0]
+   });
+
+   allBalls.push({
+      ball: blueBall,
+      inMotion: false,
+      lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+      MP: MPB,
+      A: [0,0,0],
+      B: [0,0,0],
+      scolor: [0.5,0.5,1],
+      color: [0,0,1]
    });
    
 
@@ -51,18 +86,20 @@ export const init = async model => {
       let isLeftInBall = ballIndex !== -1 ;
       
       
-      // IF NEITHER CONTROLLER IS INSIDE ANY BALL, COLOR ALL THE BALLS WHITE.
+      // // IF NEITHER CONTROLLER IS INSIDE ANY BALL, COLOR ALL THE BALLS WHITE.
       if (! isLeftInBall){
          for (let i = 0; i < allBalls.length; i++) {
-            allBalls[i].ball.color(1,1,1);
+            if(!allBalls[i].inMotion){
+               allBalls[i].ball.color(allBalls[i].scolor);
+            }
          }         
       }
 
       // IF THE LEFT CONTROLLER IS INSIDE THE BALL
       if (isLeftInBall) {
 
-         // COLOR THE BALL PINK.
-         allBalls[ballIndex].ball.color(1,.5,.5);
+         // COLOR THE BALL FULL.
+         allBalls[ballIndex].ball.color(allBalls[ballIndex].color);
 
          // IF THE LEFT TRIGGER IS SQUEEZED
          let leftTrigger = buttonState.left[0].pressed;
@@ -71,15 +108,7 @@ export const init = async model => {
             let r = 3;
             allBalls[ballIndex].lockVelocity = [0,0,0,0,0,0,0,0,0,0,0,0, 3*velocity[0], 3*velocity[1], 3*velocity[2],0];
             allBalls[ballIndex].inMotion = true;
-            let newBall = model.add('sphere').scale(ballScale);
-            allBalls.push({
-               ball: newBall,
-               inMotion: false,
-               lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-               MP: cg.mTranslate(0,1,.5),
-               A: [0,0,0],
-               B: [0,0,0]
-            });
+            
          }
 
          if (leftTrigger) {
@@ -87,10 +116,21 @@ export const init = async model => {
             // for (let i = 0; i < allBalls.length; i++) {
             //    allBalls[i].ball.color(1,0,0);
             // }
-            allBalls[ballIndex].ball.color(1,0,0);
+            //allBalls[ballIndex].ball.color(1,0,0);
             allBalls[ballIndex].B = ml.slice(12,15);
             if (! leftTriggerPrev){         // ON LEFT DOWN EVENT:
                allBalls[ballIndex].A = allBalls[ballIndex].B;                      // INITIALIZE PREVIOUS LOCATION.
+               let newBall = model.add('sphere').scale(ballScale).color(allBalls[ballIndex].scolor);
+               allBalls.push({
+                  ball: newBall,
+                  inMotion: false,
+                  lockVelocity: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                  MP: allBalls[ballIndex].MP,
+                  A: [0,0,0],
+                  B: [0,0,0],
+                  scolor: allBalls[ballIndex].scolor,
+                  color: allBalls[ballIndex].color
+               });
             }
             else{
                //ball.color(0,1,0);
@@ -156,6 +196,10 @@ export const init = async model => {
          }
          allBalls[i].ball.setMatrix(allBalls[i].MP).scale(.1);
       }
+
+      // redBall.setMatrix(MPR).scale(.1)
+      // greenBall.setMatrix(MPG).scale(.1)
+      // blueBall.setMatrix(MPB).scale(.1)
       
    });   
 }

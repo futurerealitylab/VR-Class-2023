@@ -26,7 +26,7 @@ This demo shows how you can do basic object manipulation with your controllers.
 let leftTriggerPrev = false;
 let rightTriggerPrev = false;
 
-let MP = cg.mTranslate(0,1,.5);
+let MP = cg.mTranslate(0,1.5,.5);
 let A = [0,0,0];
 let MA = cg.mIdentity();
 

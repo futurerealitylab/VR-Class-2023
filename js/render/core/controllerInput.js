@@ -92,7 +92,17 @@ export function ControllerBeam(model, hand) {
       if (hand == 'left' ) update(matrix ? [ .005,.01,-.03] : [ .0060,.014,0], [-.2,0,0]);
       if (hand == 'right') update(matrix ? [-.005,.01,-.03] : [-.0015,.014,0], [ .2,0,0]);
    }
-   this.hitRect = m => cg.mHitRect(cg.mMultiply(this.m, cg.mRotateX(-bend)), m);
+   this.beamMatrix = () => cg.mMultiply(this.m, cg.mRotateX(-bend));
+   this.hitRect = m => cg.mHitRect(this.beamMatrix(), m);
+   this.projectOntoBeam = P => {
+      let bm = this.beamMatrix();	// get controller beam matrix
+      let o = bm.slice(12, 15);		// get origin of beam
+      let z = bm.slice( 8, 11);		// get z axis of beam
+      let p = cg.subtract(P, o);	// shift point to be relative to beam origin
+      let d = cg.dot(p, z);		// compute distance of point projected onto beam
+      let q = cg.scale(z, d);		// find point along beam at that distance
+      return cg.add(o, q);		// shift back to global space
+   }
    this.hitLabel = label =>
       this.hitRect(cg.mMultiply(label.getGlobalMatrix(),
                                 cg.mScale(label.getInfo().length/2,1,1)));

@@ -9,8 +9,19 @@ let radius = 0.1;
 
 export const init = async model => {
 
+    let a = [-1, 0, 0, -1, 0, 0], A = [ 1, 0, 0,  1, 0, 0],
+       b = [ 0,-1, 0,  0,-1, 0], B = [ 0, 1, 0,  0, 1, 0],
+       c = [ 0, 0,-1,  0, 0,-1], C = [ 0, 0, 1,  0, 0, 1];
+    clay.defineMesh('smooth_octahedron', clay.trianglesMesh([
+        a,b,C, a,B,c, A,b,c, A,B,C, a,C,B, A,c,B, A,C,b, a,c,b
+    ]));
+    clay.defineMesh('special_object', clay.combineMeshes([
+        [ 'smooth_octahedron', cg.mScale(.5), [.8,.8,.5] ], // shape, matrix, color
+        [ 'donut', cg.mScale(1), [.5,.5,.5  ] ], // shape, matrix, color
+     ]));
+    
     // Create the ball
-    let ball = model.add('sphere');
+    let ball = model.add('special_object');
     let status = true;
     let array = new Array(0);
 
@@ -58,7 +69,7 @@ export const init = async model => {
 
         if (lhit && rhit && lt && rt){
             if(status){
-                let tempSphere = model.add('sphere');
+                let tempSphere = model.add('special_object');
                 tempSphere.t = model.time;
                 tempSphere.pos = center;
                 tempSphere.opa = panel.opacity;

@@ -1792,12 +1792,12 @@ let onKeyUp = event => {
 let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
     rotatex, rotatey, rotatexState, rotateyState, modelMatrix, isTable = true, isRoom = true;
 let frameCount = 0;
+let fl = 5;                                                          // CAMERA FOCAL LENGTH
 {
    let activeCount = -1;
    let blinkTime = 0;
    let blur = 0.2;
    let cursor = [0,0,0];
-   let fl = 5;                                                          // CAMERA FOCAL LENGTH
    let flash = false;
    let isAlt = false;
    let isAnimatedTexture = false;
@@ -3735,8 +3735,7 @@ function Node(_form) {
 
    this.hud = () => {
       this._isHUD = true;
-      //this.setMatrix(this.viewMatrix()).move(0,0,-1).turnY(Math.PI);
-      this.setMatrix(this.viewMatrix()).move(0,0,1);
+      this.setMatrix(this.inverseViewMatrix()).move(0,0,-1).scale(1 / (window.vr ? 2 : fl));
       return this;
    }
    this.audio = src => {return this;}
@@ -3768,7 +3767,7 @@ function Node(_form) {
       }
    }
 
-   this.viewMatrix = n => cg.mInverse(views[n ? 1 : 0]._viewMatrix);
+   this.inverseViewMatrix = n => cg.mInverse(views[n ? 1 : 0]._viewMatrix);
 
    window.controlAction = ch => {
       if (model._controlActions[ch]) {

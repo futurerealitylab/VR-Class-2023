@@ -421,14 +421,12 @@ let prevTextureResource  = null;
 let prevTextureBindPoint = -1;
 
 let drawMesh = (mesh, materialId, textureSrc, dull, flags, customShader, opacity) => {
-   if (!this.renderingIsActive) {
+   if (!this.renderingIsActive)
       return;
-   }
 
    let saveProgram = this.clayPgm.program;
-   if (customShader) {
+   if (customShader)
       window.customShader = customShader;
-   }
 
    let m = M.getValue();
    setUniform('Matrix4fv', 'uModel', false, m);
@@ -589,12 +587,14 @@ let drawMesh = (mesh, materialId, textureSrc, dull, flags, customShader, opacity
 
    if (flags)
       for (let flag in flags)
-         setUniform('1i', flag, 1); if (this.views.length == 1) { setUniform('Matrix4fv', 'uProj', false, this.views[0].projectionMatrix);
+         setUniform('1i', flag, 1);
+
+   if (this.views.length == 1) {
+      setUniform('Matrix4fv', 'uProj', false, this.views[0].projectionMatrix);
       setUniform('Matrix4fv', 'uView', false, this.views[0].viewMatrix);
       
-      if (mesh != prevMesh) {
+      if (mesh != prevMesh)
          gl.bufferData(gl.ARRAY_BUFFER, mesh, gl.DYNAMIC_DRAW);
-      }
 
       gl.drawArrays(mesh.isTriangles ? gl.TRIANGLES : gl.TRIANGLE_STRIP, 0, mesh.length / VERTEX_SIZE);
 
@@ -602,9 +602,8 @@ let drawMesh = (mesh, materialId, textureSrc, dull, flags, customShader, opacity
       const drawPrimitiveType = mesh.isTriangles ? gl.TRIANGLES : gl.TRIANGLE_STRIP;
       const vertexCount = mesh.length / VERTEX_SIZE;
       
-      if (mesh != prevMesh) {
+      if (mesh != prevMesh)
          gl.bufferData(gl.ARRAY_BUFFER, mesh, gl.DYNAMIC_DRAW);
-      }
 
       for (let i = 0; i < this.views.length; ++i) {
          let view = this.views[i];
@@ -612,7 +611,6 @@ let drawMesh = (mesh, materialId, textureSrc, dull, flags, customShader, opacity
          gl.viewport(vp.x, vp.y, vp.width, vp.height);
          setUniform('Matrix4fv', 'uProj', false, view.projectionMatrix);
          setUniform('Matrix4fv', 'uView', false, view.viewMatrix);
-   
          gl.drawArrays(drawPrimitiveType, 0, vertexCount);
       }
    }
@@ -1792,7 +1790,7 @@ let onKeyUp = event => {
 let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
     rotatex, rotatey, rotatexState, rotateyState, modelMatrix, isTable = true, isRoom = true;
 let frameCount = 0;
-let fl = 5;                                                          // CAMERA FOCAL LENGTH
+let fl = 1;                                                          // CAMERA FOCAL LENGTH
 {
    let activeCount = -1;
    let blinkTime = 0;

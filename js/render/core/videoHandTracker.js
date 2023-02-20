@@ -116,88 +116,91 @@ function VideoHandTracker() {
 
    this.update = () => {
       if (isInit && ! window.vr && window.shouldUseHandtracking()) {
-          matrix = cg.mInverse(views[0]._viewMatrix);
-          matrix = cg.mMultiply(matrix, cg.mTranslate(0,0,-1));
-          matrix = cg.mMultiply(matrix, cg.mRotateZ(Math.PI));
-          matrix = cg.mMultiply(matrix, cg.mScale(.432,.319,1));
+         matrix = cg.mInverse(views[0]._viewMatrix);
+         matrix = cg.mMultiply(matrix, cg.mTranslate(0,0,-1));
+         matrix = cg.mMultiply(matrix, cg.mRotateZ(Math.PI));
+         matrix = cg.mMultiply(matrix, cg.mScale(.432,.319,1));
 
-          isHand[0] = isHand[1] = false;
-          for (let i = 0; i < window.handInfo.length; i++) {
+         isHand[0] = isHand[1] = false;
+         for (let i = 0; i < window.handInfo.length; i++) {
 
-             // IS THIS THE LEFT HAND OR THE RIGHT HAND?
+            // IS THIS THE LEFT HAND OR THE RIGHT HAND?
 
-             let dx = window.handInfo[i].landmarks[4].x - window.handInfo[i].landmarks[20].x;
-             let h = dx < 0 ? 0 : 1;
+            let dx = window.handInfo[i].landmarks[4].x - window.handInfo[i].landmarks[20].x;
+            let h = dx < 0 ? 0 : 1;
 
-        isHand[h] = true;
-             for (let j = 0 ; j < 21 ; j++) {
-                joint[h][j].detected = true;
-                joint[h][j].position = [window.handInfo[i].landmarks[j].x-.5,
-                                        window.handInfo[i].landmarks[j].y-.5,
-                                       window.handInfo[i].landmarks[j].z-.2];
-             } 
-          } 
+            isHand[h] = true;
+            for (let j = 0 ; j < 21 ; j++) {
+               joint[h][j].detected = true;
+               joint[h][j].position = [window.handInfo[i].landmarks[j].x-.5,
+                                       window.handInfo[i].landmarks[j].y-.5,
+                                      window.handInfo[i].landmarks[j].z-.2];
+            } 
+         } 
 
-          for (let h = 0 ; h < 2 ; h++) {
+         for (let h = 0 ; h < 2 ; h++) {
+            let pose = [];
+            for (let j = 0 ; j < 21 ; j++)
+               pose.push(joint[h][j].position);
 
-             let pose = [];
-             for (let j = 0 ; j < 21 ; j++)
-                pose.push(joint[h][j].position);
-             let s = handSize.compute(pose);
-        if (! isMirror) {
-      size[h] = .8 * size[h] + .2 / Math.sqrt(s);
-      s = .5 * size[h] * size[h] * size[h];
-                for (let j = 0 ; j < 21 ; j++) {
-                   joint[h][j].position[0] *=  s;
-                   joint[h][j].position[1] *=  s;
-                   joint[h][j].position[2] *= -s;
-                }
-             }
-        else
-           size[h] = s;
+            let s = handSize.compute(pose);
+            if (! isMirror) {
+               size[h] = .8 * size[h] + .2 / Math.sqrt(s);
+               s = .5 * size[h] * size[h] * size[h];
+               for (let j = 0 ; j < 21 ; j++) {
+                  joint[h][j].position[0] *= s;
+                  joint[h][j].position[1] *= s;
+                  joint[h][j].position[2] *= s;
+               }
+            }
+            else
+               size[h] = s;
 
-             for (let j = 0 ; j < 21 ; j++)
-                joint[h][j].matrix = cg.mTranslate(joint[h][j].position);
+            for (let j = 0 ; j < 21 ; j++) {
+               let p = joint[h][j].position;
+               joint[h][j].matrix = cg.mTranslate(p[0], p[1], -p[2]);
+            }
 
-             for (let j = 0 ; j < 21 ; j++) {
-                let k = G2F[j] % 5;
-                let j1 = k < 4 ? j+1 : j;
-                let j0 = j1 - (k == 2 || k == 3 ? 2 : 1);
-                if (j == 0) { j0 = 0; j1 = 9; }
-                let a = joint[h][j0].position;
-                let b = joint[h][j1].position;
-                let d = [ b[0] - a[0], b[1] - a[1], b[2] - a[2] ];
+            for (let j = 0 ; j < 21 ; j++) {
+               let k = G2F[j] % 5;
+               let j1 = k < 4 ? j+1 : j;
+               let j0 = j1 - (k == 2 || k == 3 ? 2 : 1);
+               if (j == 0) { j0 = 0; j1 = 9; }
 
-                let m = joint[h][j].matrix;
-                m = cg.mMultiply(m, cg.mAimZ(d));
-                m = cg.mMultiply(m, cg.mScale(joint[h][j].detected ? j==0 ? [.02,.026,.026]
-                                                                          : [.01,.013,.013] : 0));
-                joint[h][j].matrix = cg.mMultiply(matrix,
-                                        cg.mMultiply(m, cg.mScale(! isMirror ? .5 * size[h] * size[h]
-                                                         : size[h])));
-             }
-          }
+               let a = joint[h][j0].position;
+               let b = joint[h][j1].position;
+               let d = [ b[0] - a[0], b[1] - a[1], a[2] - b[2] ];
 
-          // IF EXACTLY ONE HAND IS VISIBLE, USE FOREFINGER AS A 2D CURSOR
+               let m = joint[h][j].matrix;
+               m = cg.mMultiply(m, cg.mAimZ(d));
+               m = cg.mMultiply(m, cg.mScale(joint[h][j].detected ? j==0 ? [.02,.026,.026]
+                                                                         : [.01,.013,.013] : 0));
+               joint[h][j].matrix = cg.mMultiply(matrix,
+                                    cg.mMultiply(m, cg.mScale(! isMirror ? .5 * size[h] * size[h]
+                                                                         : 1.5 * size[h])));
+            }
+         }
 
-     if (isHand[0] != isHand[1]) {
-             let m = joint[isHand[0] ? 0 : 1][8].matrix;
-             let x = m[12]*-3200+640;
-             let y = m[13]*-3200+5530;
-             if (px == null) { px = x; py = y; }
-             px = .5 * px + .5 * x;
-             py = .5 * py + .5 * y;
-        anidraw.setTimelineInteractive(false);
-             anidraw.mousemove({x:px, y:py});
-        anidraw.setTimelineInteractive(true);
-          }
+         // IF EXACTLY ONE HAND IS VISIBLE, USE FOREFINGER AS A 2D CURSOR
 
-          // IF A HAND IS NOT RETURNING ANY DATA, DO NOT DISPLAY IT
+         if (isHand[0] != isHand[1]) {
+            let m = joint[isHand[0] ? 0 : 1][8].matrix;
+            let x = m[12]*-3200+640;
+            let y = m[13]*-3200+5530;
+            if (px == null) { px = x; py = y; }
+            px = .5 * px + .5 * x;
+            py = .5 * py + .5 * y;
+            anidraw.setTimelineInteractive(false);
+            anidraw.mousemove({x:px, y:py});
+            anidraw.setTimelineInteractive(true);
+         }
 
-     for (let h = 0 ; h < 2 ; h++)
-        if (! isHand[h])
-           for (let j = 0 ; j < 21 ; j++)
-                    joint[h][j].matrix = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
+         // IF A HAND IS NOT RETURNING ANY DATA, DO NOT DISPLAY IT
+
+         for (let h = 0 ; h < 2 ; h++)
+            if (! isHand[h])
+               for (let j = 0 ; j < 21 ; j++)
+                  joint[h][j].matrix = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0];
       }
    }
 
@@ -255,12 +258,11 @@ function VideoHandTracker() {
       for (let i = 0 ; i < 5 ; i++)
       for (let j = 0 ; j < 5 ; j++)
          if (d3(L[i],R[j]) < .04 && ! T[i+','+j]) {
-       T[i+','+j] = true;
-       pose += i + '-' + j + ' ';
+            T[i+','+j] = true;
+            pose += i + '-' + j + ' ';
          }
       return pose;
    }
-
 }
 
 export let videoHandTracker = new VideoHandTracker();

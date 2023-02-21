@@ -1030,15 +1030,25 @@ this.wire = (nu,nv) => {
 }
 
 this.animateWire = (wire, r, f) => {
-   wire.setVertices((u,v) => {
-      let p = f(u),
-          z = cg.subtract(f(u + .01), p),
-          xx = z[0]*z[0], yy = z[1]*z[1], zz = z[2]*z[2],
-          x = cg.normalize(cg.cross(z, [ yy+zz, zz+xx, xx+yy ])),
-          y = cg.normalize(cg.cross(z, x));
-      return cg.add(cg.add(p, cg.scale(x, r * Math.sin(2 * Math.PI * v))),
-                              cg.scale(y, r * Math.cos(2 * Math.PI * v)));
-   });
+   let nu = parseInt(wire._form.substring(5,wire.length));
+
+   let z = cg.subtract(f(.01), f(0)),
+       xx = z[0]*z[0], yy = z[1]*z[1], zz = z[2]*z[2],
+       x = cg.normalize(cg.cross(z, [ yy+zz, zz+xx, xx+yy ])),
+       y = cg.normalize(cg.cross(z, x));
+
+   let X = [], Y = [];
+   for (let i = 0 ; i <= nu ; i++) {
+      X.push(x);
+      Y.push(y);
+      let u = i / nu;
+      z = cg.subtract(f(u + .01), f(u));
+      x = cg.normalize(cg.cross(y, z));
+      y = cg.normalize(cg.cross(z, x));
+   }
+
+   wire.setVertices((u,v) => cg.add(cg.add(f(u), cg.scale(X[nu*u >> 0], r * Math.sin(2 * Math.PI * v))),
+                                                 cg.scale(Y[nu*u >> 0], r * Math.cos(2 * Math.PI * v))));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -1790,7 +1800,7 @@ let onKeyUp = event => {
 let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
     rotatex, rotatey, rotatexState, rotateyState, modelMatrix, isTable = true, isRoom = true;
 let frameCount = 0;
-let fl = 1;                                                          // CAMERA FOCAL LENGTH
+let fl = 5;                                                          // CAMERA FOCAL LENGTH
 {
    let activeCount = -1;
    let blinkTime = 0;

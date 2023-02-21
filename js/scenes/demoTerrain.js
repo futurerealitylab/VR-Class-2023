@@ -1,4 +1,16 @@
-// Demo showing how to create a time-varying terrain.
+/*
+	This demo shows how to create a time-varying terrain.
+
+	Use call clay.createGrid() to make a mesh which is a grid of custom size.
+	Then we call clay.defineMesh() to give that mesh a type name.
+	We then instance our mesh by calling model.add(<typename>)
+
+	When we animate the mesh, we call obj.setVertices(), which
+	lets us map (u,v) to [x,y,z].
+
+	The computation of the correct surface normals is done automatically
+	for us inside the obj.setVertices() function.
+*/
 
 import * as cg from "../render/core/cg.js";
 

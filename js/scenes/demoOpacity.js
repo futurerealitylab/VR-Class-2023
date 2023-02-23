@@ -1,5 +1,6 @@
-
-// This demo shows how you can vary opacity.
+/*
+   This demo shows how you can vary an object's opacity.
+*/
 
 export const init = async model => {
 

@@ -1,20 +1,20 @@
 /*
-	This demo shows you how to procedurally texture
-	different objects in your scene.
+   This demo shows you how to procedurally texture
+   different objects in your scene.
 
-	To associate an object with shader code, you
-	declare a flag for that shader code in your
-	fragment shader, and set that flag to true
-	for any object that uses it.
+   To associate an object with shader code, you
+   declare a flag for that shader code in your
+   fragment shader, and set that flag to true
+   for any object that uses it.
 
-	In the example below, there are three cubes.
-	The first is untextured, the second has a noise
-	texture, and the third has a stripe texture.
+   In the example below, there are three cubes.
+   The first is untextured, the second has a noise
+   texture, and the third has a stripe texture.
 
-	Note that all the shader code is declared
-	in the same customShader, and the flags are
-	used to turn any given texture on or off for
-	various objects in the scene.
+   Note that all the shader code is declared
+   in the same customShader, and the flags are
+   used to turn any given texture on or off for
+   various objects in the scene.
 */
 export const init = async model => {
    model.setTable(false);

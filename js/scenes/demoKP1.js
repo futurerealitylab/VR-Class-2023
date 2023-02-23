@@ -1,6 +1,10 @@
 import * as cg from "../render/core/cg.js";
 import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
-
+/*
+   This is a model inspired by the robot sketch from
+   the whiteboard in our classroom. It shows an example
+   of a hierarchical object with rotating joints.
+*/
 export const init = async model => {
    let robot = model.add().color(.7,.7,.7);
    let base  = robot.add();

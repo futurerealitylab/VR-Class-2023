@@ -25,7 +25,7 @@ export default () => {
          { name: "DemoRayTrace"      , path: "./demoRayTrace.js"      },
          { name: "DemoAudio"         , path: "./demoAudio.js"         },
          { name: "DemoWire"          , path: "./demoWire.js"          },
-         { name: "DemoBlobs"         , path: "./demoBlobs.js"         },
+         { name: "DemoBlending"      , path: "./demoBlending.js"      },
       ]
    };
 }

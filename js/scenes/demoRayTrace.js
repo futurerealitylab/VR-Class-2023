@@ -1,3 +1,15 @@
+/*
+   This demo shows how you can embed an entire ray tracer
+   inside the fragment shader.
+
+   As with any change to the fragment shader, you need to
+   set a flag (in this case uRayTrace) so that the ray tracing
+   code will run only for the object(s) that you select.
+
+   You can also see here how to toggle Heads-Up Display (HUD)
+   mode for the object that is running the ray tracing shader
+   code, by using 'h' mode toggle.
+*/
 export const init = async model => {
    let screen = model.add('cube');
    let isHUD = false;
@@ -6,10 +18,10 @@ export const init = async model => {
    model.animate(() => {
       let m = views[0]._viewMatrix, c = .5*Math.cos(model.time), s = .5*Math.sin(model.time);
       if (isHUD)
-         model.hud().scale(.25).move(0,-.1,0).turnZ(Math.PI/2);
+         model.hud();
       else
-         model.setMatrix([m[0],m[4],m[8],0,m[1],m[5],m[9],0,m[2],m[6],m[10],0,0,1.5,0,1]);
-      screen.identity().scale(.3,.3,.0001);
+         model.setMatrix([m[0],m[4],m[8],0,m[1],m[5],m[9],0,m[2],m[6],m[10],0,0,1.6,-1,1]);
+      model.scale(.4,.4,.0001);
 
       model.flag('uRayTrace');
       model.setUniform('4fv','uL', [.5,.5,.5,1., -.5,-.5,-.5,.2, .7,-.7,0,.2, -.7,.7,0,.2]);

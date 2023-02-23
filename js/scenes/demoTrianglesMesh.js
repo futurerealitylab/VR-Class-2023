@@ -1,9 +1,7 @@
 import * as cg from "../render/core/cg.js";
-
 /*
    This demo shows how to create your own custom triangles mesh.
 */
-
 export const init = async model => {
    let a = [-1, 0, 0, -1, 0, 0], A = [ 1, 0, 0,  1, 0, 0],
        b = [ 0,-1, 0,  0,-1, 0], B = [ 0, 1, 0,  0, 1, 0],

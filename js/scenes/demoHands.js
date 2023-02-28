@@ -1,6 +1,11 @@
 import * as cg from "../render/core/cg.js";
 import { videoHandTracker } from "../render/core/videoHandTracker.js";
-
+/*
+   This is how you create a model of a hand to tie into the built-in
+   desktop hand tracking. When you are wearing your VR headset, this
+   code turns off, since for the VR headset we've already built in a
+   visible hand tracking model.
+*/
 export const init = async model => {
    let model_hands = model.add().color(1,.5,.5);
 

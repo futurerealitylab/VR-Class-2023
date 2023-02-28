@@ -37,12 +37,12 @@ function G2() {
 
    let widgets = [];
 
-   this.addWidget = (obj, type, x, y, color, label, action) => {
+   this.addWidget = (obj, type, x, y, color, label, action, size) => {
       switch (type) {
-      case 'button'  : widgets.push(new Button  (obj, x, y, color, label, action)); break;
-      case 'slider'  : widgets.push(new Slider  (obj, x, y, color, label, action)); break;
-      case 'textbox' : widgets.push(new Textbox (obj, x, y, color, label, action)); break;
-      case 'trackpad': widgets.push(new Trackpad(obj, x, y, color, label, action)); break;
+      case 'button'  : widgets.push(new Button  (obj, x, y, color, label, action, size)); break;
+      case 'slider'  : widgets.push(new Slider  (obj, x, y, color, label, action, size)); break;
+      case 'textbox' : widgets.push(new Textbox (obj, x, y, color, label, action, size)); break;
+      case 'trackpad': widgets.push(new Trackpad(obj, x, y, color, label, action, size)); break;
       }
       return widgets[widgets.length - 1];
    }
@@ -93,11 +93,12 @@ function G2() {
       g2.fillRect(x+w/2, y-h/2+s, s, h);
    }
 
-   let Button = function(obj, x, y, color, label, action) {
+   let Button = function(obj, x, y, color, label, action, size) {
+      size = cg.def(size, 1);
       this.obj = obj;
       this.state = 0;
-      g2.textHeight(.09);
-      let w = textWidth(label) + .02, h = .1;
+      g2.textHeight(.09 * size);
+      let w = textWidth(label) + .02 * size, h = .1 * size;
       this.setLabel = str => label = str;
       this.isWithin = () => {
          let uvz = g2.getUVZ(obj);
@@ -113,7 +114,7 @@ function G2() {
       }
       this.draw = () => {
          let isPressed = this == activeWidget && (mouseState == 'press' || mouseState == 'drag');
-         g2.textHeight(.09);
+         g2.textHeight(.09 * size);
          g2.setColor(color, isPressed ? .5 : this.isWithin() ? .7 : 1);
          g2.fillRect(x-w/2, y-h/2, w, h);
          g2.setColor('black');
@@ -122,10 +123,11 @@ function G2() {
       }
    }
 
-   let Slider = function(obj, x, y, color, label, action) {
+   let Slider = function(obj, x, y, color, label, action, size) {
+      size = cg.def(size, 1);
       this.obj = obj;
       let value = 0.5;
-      let w = .5, h = .1;
+      let w = .5 * size, h = .1 * size;
       this.setLabel = str => label = str;
       this.isWithin = () => {
          let uvz = g2.getUVZ(obj);
@@ -141,7 +143,7 @@ function G2() {
          }
       }
       this.draw = () => {
-         g2.textHeight(.09);
+         g2.textHeight(.09 * size);
          let isPressed = this == activeWidget && (mouseState == 'press' || mouseState == 'drag');
          g2.setColor(color, isPressed ? .75 : this.isWithin() ? .85 : 1);
          g2.fillRect(x-w/2, y-h/2, w, h);
@@ -153,13 +155,14 @@ function G2() {
       }
    }
 
-   let Textbox = function(obj, x, y, color, text, action) {
+   let Textbox = function(obj, x, y, color, text, action, size) {
+      size = cg.def(size, 1);
       this.obj = obj;
       let model = obj;
       let cursor = text.length;
       while (model._parent._parent)
          model = model._parent;
-      let w = .9, h = .1;
+      let w = .9 * size, h = .1 * size;
       this.isWithin = () => {
          let uvz = g2.getUVZ(obj);
          return uvz && uvz[0] > x-w/2 && uvz[0] < x+w/2 && uvz[1] > y-h/2 && uvz[1] < y+h/2;
@@ -167,7 +170,7 @@ function G2() {
       this.handleEvent = () => {
          let uvz = g2.getUVZ(obj);
 	 if (uvz) {
-	    cursor = (uvz[0] - x) / .053 + text.length/2;
+	    cursor = (uvz[0] - x) / (.053 * size) + text.length/2;
 	    cursor = Math.max(0, Math.min(text.length, cursor + .5 >> 0));
          }
       }
@@ -198,24 +201,25 @@ function G2() {
       }
       this.draw = () => {
          context.save();
-         context.font = (height * .09) + 'px courier';
+         context.font = (height * .09 * size) + 'px courier';
          g2.setColor(color, this.isWithin() ? .7 : 1);
          g2.fillRect(x-w/2, y-h/2, w, h);
          g2.setColor('black');
          g2.fillText(text, x, y, 'center');
 	 if (this == activeWidget) { // IF THIS IS THE ACTIVE WIDGET, THEN DRAW THE CURSOR.
-	    let cx = x + .053 * (cursor - text.length/2);
-            g2.fillRect(cx-.005,y-h/2,.01,h);
+	    let cx = x + .053 * size * (cursor - text.length/2);
+            g2.fillRect(cx - .005 * size, y - h/2, .01 * size, h);
          }
 	 drawWidgetOutline(x,y,w,h, true);
          context.restore();
       }
    }
 
-   let Trackpad = function(obj, x, y, color, label, action) {
+   let Trackpad = function(obj, x, y, color, label, action, size) {
+      size = cg.def(size, 1);
       this.obj = obj;
       let value = [0.5, 0.5];
-      let w = .5, h = .5;
+      let w = .5 * size, h = .5 * size;
       this.isWithin = () => {
          let uvz = g2.getUVZ(obj);
          return uvz && uvz[0] > x-w/2 && uvz[0] < x+w/2 && uvz[1] > y-h/2 && uvz[1] < y+h/2;
@@ -230,14 +234,14 @@ function G2() {
          }
       }
       this.draw = () => {
-         g2.textHeight(.09);
+         g2.textHeight(.09 * size);
          let isPressed = this == activeWidget && (mouseState == 'press' || mouseState == 'drag');
          g2.setColor(color, isPressed ? .75 : this.isWithin() ? .85 : 1);
          g2.fillRect(x-w/2, y-h/2, w, h);
          g2.setColor(color, isPressed ? .375 : this.isWithin() ? .475 : .5);
          g2.setColor('#00000080');
-         g2.fillRect(x-w/2 + w*value[0] - .005, y-h/2, .01, h);
-         g2.fillRect(x-w/2, y-h/2 + h*value[1] - .005, w, .01);
+         g2.fillRect(x-w/2 + w*value[0] - .005 * size, y-h/2, .01 * size, h);
+         g2.fillRect(x-w/2, y-h/2 + h*value[1] - .005 * size, w, .01 * size);
          g2.setColor('black');
          g2.fillText(label, x, y, 'center');
 	 drawWidgetOutline(x,y,w,h, isPressed);

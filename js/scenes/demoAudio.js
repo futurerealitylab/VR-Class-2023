@@ -1,10 +1,14 @@
-/*
+
+/*******************************************************************
+
    This demo shows how you can play different sounds
    based on an object position in the scene.
 
    The complete audio API can be found at:
    	https://www.w3schools.com/jsref/dom_obj_audio.asp
-*/
+
+*******************************************************************/
+
 export const init = async model => {
    let d1 = new Audio('../../media/sound/pianoSounds/D1.m4a');
    let g1 = new Audio('../../media/sound/pianoSounds/G1.m4a');

@@ -1,4 +1,5 @@
-/*
+/******************************************************************
+
    This demo shows how you can embed an entire ray tracer
    inside the fragment shader.
 
@@ -9,7 +10,9 @@
    You can also see here how to toggle Heads-Up Display (HUD)
    mode for the object that is running the ray tracing shader
    code, by using 'h' mode toggle.
-*/
+
+******************************************************************/
+
 export const init = async model => {
    let screen = model.add('cube');
    let isHUD = false;

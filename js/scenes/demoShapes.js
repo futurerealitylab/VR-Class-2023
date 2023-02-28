@@ -1,8 +1,12 @@
 import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
-/*
+
+/******************************************************************
+
    This demo shows a variety of objects that can be
    rendered or textured in the system.
-*/
+
+******************************************************************/
+
 export const init = async model => {
    let cube = model.add('cube').texture('../media/textures/brick.png');
    let tube1 = model.add('tubeX').color(1,0,0);

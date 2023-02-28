@@ -1,5 +1,7 @@
 import * as cg from "../render/core/cg.js";
-/*
+
+/****************************************************************************
+
    This demo shows how to create a time-varying terrain.
 
    Use call clay.createGrid() to make a mesh which is a grid of custom size.
@@ -11,7 +13,9 @@ import * as cg from "../render/core/cg.js";
 
    The computation of the correct surface normals is done automatically
    for us inside the obj.setVertices() function.
-*/
+
+****************************************************************************/
+
 export const init = async model => {
    clay.defineMesh('myTerrain', clay.createGrid(60, 60));
    let terrain = model.add('myTerrain').color(0,.5,1).opacity(.7);

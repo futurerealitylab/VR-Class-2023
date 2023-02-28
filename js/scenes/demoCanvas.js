@@ -1,8 +1,12 @@
 import { g2 } from "../util/g2.js";
 import { matchCurves } from "../render/core/matchCurves.js";
-/*
-   This demo shows examples of 2D canvases in VR.
-*/
+
+/*****************************************************************
+
+   This demo shows various examples of 2D canvases in VR.
+
+*****************************************************************/
+
 export const init = async model => {
 
    // ANIMATED DRAWING OF A WIGGLY LINE

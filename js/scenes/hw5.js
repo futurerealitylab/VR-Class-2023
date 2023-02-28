@@ -6,6 +6,7 @@ import { matchCurves } from "../render/core/matchCurves.js";
 
 let center1 = [0,1.5,0];
 let center2 = [0,1.5,0];
+let centerError = [0,1.5,0];
 let radius = 0.1;
 let count3 = new Audio('../../media/sound/three-two-one-fight-deep-voice.mp3');
 let count60 = new Audio('../../media/sound/clock-ticking-60-second-countdown.mp3');
@@ -13,6 +14,7 @@ let count60switch = true;
 let successhoot = new Audio('../../media/sound/success.mp3');
 let game_end = new Audio('../../media/sound/game_end.mp3');
 let game_end_switch = true;
+let error = new Audio('../../media/sound/error.mp3');
 
 export const init = async model => {
     
@@ -32,10 +34,12 @@ export const init = async model => {
     // Create the ball1
     let ball1 = model.add('special_object');
     let ball2 = model.add('special_object');
+    let ballError = model.add('special_object');
     let status = true;
     let shootfirst = true;
     let shoot = true;
     let array = new Array(0);
+    let arrayError = new Array(0);
     let score = 0;
     let highestScore = 0;
     let timeLimit = 60;
@@ -164,6 +168,7 @@ export const init = async model => {
             ball1.identity().move(center1).scale(radius);
             ball1.opacity(.001+panel.opacity);
             ball2.identity().move(center2).scale(radius).opacity(.01);
+            ballError.identity().move(centerError).scale(radius).opacity(.01);
             panel.hud().move(.3,-.2,1).scale(.3,.3,.0001);
             scoreBoard.hud().move(.3,-.2,1).scale(.001,.001,.0001);
             // panel.identity().move(1,1.2,0).turnY(-Math.PI/4).turnX(-Math.PI/16).scale(.4,.4,.0001);
@@ -193,6 +198,7 @@ export const init = async model => {
                     shootfirst = false;
                 }
                 center2 = [2*Math.random()-1,.5+Math.random(),2*Math.random()-1];
+                centerError = [2*Math.random()-1,.5+Math.random(),2*Math.random()-1];
                 shoot = false;
             }
             countDown = model.time - startTime;
@@ -222,7 +228,21 @@ export const init = async model => {
                 game_end.play();
                 game_end_switch = false;
             }
+            let lpointError = lcb.projectOntoBeam(centerError);
+            let rpointError = rcb.projectOntoBeam(centerError);
+            let ldiffError = cg.subtract(lpointError, centerError);
+            let rdiffError = cg.subtract(rpointError, centerError);
+            let lhitError = cg.norm(ldiffError) < radius;
+            let rhitError = cg.norm(rdiffError) < radius;
+            if((lhitError || rhitError) && (lt || rt)){
+                score -= 2;
+                shoot = true;
+                error.pause();
+                error.currentTime = 0;
+                error.play();
+            }
             ball2.identity().move(center2).scale(radius).opacity(1);
+            ballError.identity().move(centerError).scale(radius).color("red").opacity(1);
             scoreBoard.hud().move(.35,-.2,1).scale(.3,.3,.0001);
 
             // zero opacity

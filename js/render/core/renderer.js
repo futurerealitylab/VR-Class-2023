@@ -328,15 +328,13 @@ const CUSTOM_SHADER_FUNCTIONS_MARKER = '// CUSTOM SHADER FUNCTIONS GO HERE';
 
 export let clayFragWithCustomShader = str => {
    let src = Clay_FRAG_SOURCE;
-
    let functions = '';
-   let SF = 'START_FUNCTIONS',
-       EF = 'END_FUNCTIONS';
-   let j = str.indexOf(SF);
+
+   let j = str.indexOf('---');
    if (j >= 0) {
-      let k = str.indexOf(EF);
-      functions = str.substring(j + SF.length, k);
-      str = str.substring(0, j) + str.substring(k + EF.length, str.length);
+      functions = str.substring(0, j);
+      let k = str.lastIndexOf('---') + 3;
+      str = str.substring(k, str.length);
    }
 
    let i0 = src.indexOf(CUSTOM_SHADER_FUNCTIONS_MARKER);

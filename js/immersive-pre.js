@@ -34,7 +34,7 @@ import { setSketchchatSync } from './util/sketchchat_sync.js';
 import { viveRawData3 } from "./data/viveRawData3.js";
 window.wsport = 8447;
 window.vr = false;
-window.handtracking = false;
+window.handtracking = true;
 window.interactMode = 0;
 window.model = 0;
 // window.toioCmdPara = {"61": "220,150,0", "64":"190,250,0", "66":"190,150,0", "67":"220,250,0"};

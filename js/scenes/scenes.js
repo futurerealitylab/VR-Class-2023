@@ -18,6 +18,10 @@ export default () => {
          { name: "DemoTwoCubes"      , path: "./demoTwoCubes.js"      },
          { name: "DemoTrianglesMesh" , path: "./demoTrianglesMesh.js" },
          { name: "DemoOpacity"       , path: "./demoOpacity.js"       },
+         { name: "DemoHUD"           , path: "./demoHUD.js"           },
+         { name: "DemoHands"         , path: "./demoHands.js"         },
+         { name: "DemoShader"        , path: "./demoShader.js"        },
+         { name: "DemoTerrain"       , path: "./demoTerrain.js"       },
          { name: "hw1robot"     , path: "./hw1robot.js"     },
          { name: "hw2controller"     , path: "./hw2controller.js"     },
          { name: "hw3", path: "./hw3.js"}

@@ -18,7 +18,7 @@ install Node.js and npm if you haven't
 
 # How to run in VR
 
-1. Run the program locally on your compurer
+1. Run the program locally on your computer
 2. Open the browser on your VR headset
 3. Go to chrome://flags/
 4. Search: ***"Insecure origins treated as secure"*** and enable the flag

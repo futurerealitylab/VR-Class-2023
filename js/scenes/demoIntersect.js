@@ -14,7 +14,7 @@ export const init = async model => {
       let s = .2 * Math.sin(t);
       box1.identity().move(-.2,1.5+s,0).turnX(t  ).turnY(t  ).scale(.3,.2,.1);
       box2.identity().move( .2,1.5-s,0).turnY(t/2).turnX(t/2).scale(.2);
-      let isIntersect = cg.isBoxIntersection(box1.getGlobalMatrix(), box2.getGlobalMatrix());
+      let isIntersect = cg.isBoxIntersectBox(box1.getGlobalMatrix(), box2.getGlobalMatrix());
       box1.color(isIntersect ? [1,.5,.5] : [1,1,1]);
       box2.color(isIntersect ? [1,.5,.5] : [1,1,1]);
    });

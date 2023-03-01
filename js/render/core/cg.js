@@ -239,10 +239,10 @@ export let isLineIntersectPoly = (A, B, P) => {
       else
          t1 = Math.min(t1, -pv / pw);
    }
-   return t0 < t1 && t1 > 0 && t0 < distance(A, B);
+   return t0 > t1 || t1 < 0 || t0 > distance(A, B) ? null : [t0, t1];
 }
 
-export let isBoxIntersection = (A,B) => {
+export let isBoxIntersectBox = (A,B) => {
    let P = [[1,0,0,1],[-1,0,0,1],[0,1,0,1],[0,-1,0,1],[0,0,1,1],[0,0,-1,1]];
    let isIntersect = (A,B) => {
       let C = mMultiply(mInverse(B), A);
@@ -252,31 +252,6 @@ export let isBoxIntersection = (A,B) => {
          if (isLineIntersectPoly(mc([-1,u,v]), mc([1,u,v]), P)) return true;
          if (isLineIntersectPoly(mc([v,-1,u]), mc([v,1,u]), P)) return true;
          if (isLineIntersectPoly(mc([u,v,-1]), mc([u,v,1]), P)) return true;
-      }
-      return false;
-   }
-   return isIntersect(A,B) || isIntersect(B,A);
-}
-
-export let isBoxIntersection1 = (A,B) => {
-   let P = [[1,0,0,1],[-1,0,0,1],[0,1,0,1],[0,-1,0,1],[0,0,1,1],[0,0,-1,1]];
-   let isIntersect = (A,B) => {
-      let C = mMultiply(mInverse(B), A);
-      let isEdgeInBox = (a,b) => {
-         a = mTransform(C, a);
-         b = mTransform(C, b);
-         for (let t = 0 ; t < 1 ; t += .1) {
-            let p = mix(a,b,t);
-            if (p[0]*p[0] < 1 && p[1]*p[1] < 1 && p[2]*p[2] < 1)
-               return true;
-         }
-         return false;
-      }
-      for (let n = 0 ; n < 4 ; n++) {
-         let u = n&1 ? 1 : -1, v = n&2 ? 1 : -1;
-         if (isEdgeInBox([-1,u,v], [1,u,v])) return true;
-         if (isEdgeInBox([v,-1,u], [v,1,u])) return true;
-         if (isEdgeInBox([u,v,-1], [u,v,1])) return true;
       }
       return false;
    }

@@ -1,4 +1,5 @@
-/*
+/***************************************************************
+
    This demo shows how objects can "melt" into each other
    to create blended shapes.
 
@@ -15,7 +16,9 @@
 
    You can turn off blending entirely by toggling 'b' mode,
    which lets you see the underlying shapes.
-*/
+
+***************************************************************/
+
 export const init = async model => {
    let isAnimate = true, isBlending = true, isRubber = true, t = 0;
 

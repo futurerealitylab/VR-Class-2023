@@ -511,7 +511,7 @@ vec3 lighting_contribution(
        color *= mix(vec3(1.), texture.rgb, texture.a);
        opacity *= texture.a;
        if (uTransparentTexture == 1) {
-    color = 5. * ambient;
+          color = 5. * ambient;
           opacity *= max(0., 1. - (texture.r + texture.g + texture.b) / 3.);
        }
     }
@@ -1374,6 +1374,7 @@ export class Renderer {
     if (window.gpuUseAlphaToCoverage) {
       gl.disable(gl.BLEND);
       gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+
     } else {
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);

@@ -225,6 +225,39 @@
    }
 }).noise;
 
+// GEOMETRY METHODS
+
+export let isLineIntersectPoly = (A, B, P) => {
+   let V = A.concat(1);
+   let W = normalize(subtract(B,A)).concat(0);
+   let t0 = -100000, t1 = 100000;
+   for (let i = 0 ; i < P.length ; i++) {
+      let pv = dot(P[i], V);
+      let pw = dot(P[i], W);
+      if (pw > 0)
+         t0 = Math.max(t0, -pv / pw);
+      else
+         t1 = Math.min(t1, -pv / pw);
+   }
+   return t0 > t1 || t1 < 0 || t0 > distance(A, B) ? null : [t0, t1];
+}
+
+export let isBoxIntersectBox = (A,B) => {
+   let P = [[1,0,0,1],[-1,0,0,1],[0,1,0,1],[0,-1,0,1],[0,0,1,1],[0,0,-1,1]];
+   let isIntersect = (A,B) => {
+      let C = mMultiply(mInverse(B), A);
+      let mc = a => mTransform(C, a);
+      for (let n = 0 ; n < 4 ; n++) {
+         let u = n&1 ? 1 : -1, v = n&2 ? 1 : -1;
+         if (isLineIntersectPoly(mc([-1,u,v]), mc([1,u,v]), P)) return true;
+         if (isLineIntersectPoly(mc([v,-1,u]), mc([v,1,u]), P)) return true;
+         if (isLineIntersectPoly(mc([u,v,-1]), mc([u,v,1]), P)) return true;
+      }
+      return false;
+   }
+   return isIntersect(A,B) || isIntersect(B,A);
+}
+
 // MATRIX METHODS
 
 export let mAimX = (X,Y) => {

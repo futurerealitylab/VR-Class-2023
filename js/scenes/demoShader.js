@@ -1,4 +1,5 @@
-/*
+/******************************************************************
+
    This demo shows you how to procedurally texture
    different objects in your scene.
 
@@ -15,10 +16,10 @@
    in the same customShader, and the flags are
    used to turn any given texture on or off for
    various objects in the scene.
-*/
-export const init = async model => {
-   model.setTable(false);
 
+******************************************************************/
+
+export const init = async model => {
    let box0 = model.add('cube'); // Untextured box
    let box1 = model.add('cube'); // Noise textured box
    let box2 = model.add('cube'); // Stripe textured box

@@ -1,10 +1,14 @@
 import { g2 } from "../util/g2.js";
-/*
+
+/***********************************************************************
+
 	This demo shows how you can add heads-up display (HUD) objects.
 
 	The object will move together with you as you change your view,
 	and will always rotate to face you.
-*/
+
+***********************************************************************/
+
 export const init = async model => {
 
    g2.textHeight(.1);

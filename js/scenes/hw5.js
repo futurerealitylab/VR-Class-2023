@@ -20,6 +20,14 @@ export const init = async model => {
     
     model.setTable(false);
 
+    let f = t => [ Math.cos(2*Math.PI*(model.time%1)*t), Math.sin(2*Math.PI*(model.time%1)*t), 0 ];
+    let wire1 = model.add(clay.wire(200,8));
+    let wire2 = model.add(clay.wire(200,8));
+    let wire3 = model.add(clay.wire(200,8)).color("green");
+    let wire4 = model.add(clay.wire(200,8)).color("green");
+    let wireError1 = model.add(clay.wire(200,8)).color("red");
+    let wireError2 = model.add(clay.wire(200,8)).color("red");
+
     let a = [-1, 0, 0, -1, 0, 0], A = [ 1, 0, 0,  1, 0, 0],
        b = [ 0,-1, 0,  0,-1, 0], B = [ 0, 1, 0,  0, 1, 0],
        c = [ 0, 0,-1,  0, 0,-1], C = [ 0, 0, 1,  0, 0, 1];
@@ -29,7 +37,7 @@ export const init = async model => {
     clay.defineMesh('special_object', clay.combineMeshes([
         [ 'smooth_octahedron', cg.mScale(.5), [.8,.8,.5] ], // shape, matrix, color
         [ 'donut', cg.mScale(1), [.5,.5,.5  ] ], // shape, matrix, color
-     ]));
+    ]));
     
     // Create the ball1
     let ball1 = model.add('special_object');
@@ -39,7 +47,6 @@ export const init = async model => {
     let shootfirst = true;
     let shoot = true;
     let array = new Array(0);
-    let arrayError = new Array(0);
     let score = 0;
     let highestScore = 0;
     let timeLimit = 60;
@@ -140,6 +147,7 @@ export const init = async model => {
     model.animate(() => {        
         // leyt rt = buttonState.right[0].pressed;
         if(menu.mode == 0){
+
             let lpoint = lcb.projectOntoBeam(center1);
             let ldiff = cg.subtract(lpoint, center1);
             let lhit = cg.norm(ldiff) < radius;
@@ -171,6 +179,15 @@ export const init = async model => {
             ballError.identity().move(centerError).scale(radius).opacity(.01);
             panel.hud().move(.3,-.2,1).scale(.3,.3,.0001);
             scoreBoard.hud().move(.3,-.2,1).scale(.001,.001,.0001);
+            wire3.identity().opacity(.01);
+            wire4.identity().opacity(.01);
+            wireError1.identity().opacity(.01);
+            wireError2.identity().opacity(.01);
+            // add circles around
+            wire1.identity().color([panel.Rcolor, panel.Gcolor, panel.Bcolor]).move(center1).turnX(Math.PI/4).turnY(-Math.PI/4).scale(.13).opacity(1);
+            wire2.identity().color([panel.Rcolor, panel.Gcolor, panel.Bcolor]).move(center1).turnX(Math.PI/4).turnY(Math.PI/4).scale(.13).opacity(1);
+            clay.animateWire(wire1, .01, f);
+            clay.animateWire(wire2, .01, f);
             // panel.identity().move(1,1.2,0).turnY(-Math.PI/4).turnX(-Math.PI/16).scale(.4,.4,.0001);
             for (let i = 0; i < array.length; i++){
                 // array[i].identity().move(Math.sin((model.time - array[i].t)),0,0);
@@ -244,6 +261,15 @@ export const init = async model => {
             ball2.identity().move(center2).scale(radius).opacity(1);
             ballError.identity().move(centerError).scale(radius).color("red").opacity(1);
             scoreBoard.hud().move(.35,-.2,1).scale(.3,.3,.0001);
+            // add circles around
+            wire3.identity().move(center2).turnX(Math.PI/4).turnY(-Math.PI/4).scale(.13).opacity(1);
+            wire4.identity().move(center2).turnX(Math.PI/4).turnY(Math.PI/4).scale(.13).opacity(1);
+            clay.animateWire(wire3, .01, f);
+            clay.animateWire(wire4, .01, f);
+            wireError1.identity().move(centerError).turnX(Math.PI/4).turnY(-Math.PI/4).scale(.13).opacity(1);
+            wireError2.identity().move(centerError).turnX(Math.PI/4).turnY(Math.PI/4).scale(.13).opacity(1);
+            clay.animateWire(wireError1, .01, f);
+            clay.animateWire(wireError2, .01, f);
 
             // zero opacity
             ball1.identity().move(center2).scale(radius).opacity(.01);
@@ -251,6 +277,8 @@ export const init = async model => {
             for (let i = 0; i < array.length; i++){
                 array[i].identity().move(array[i].pos).opacity(0.01).scale(.1);
             }
+            wire1.identity().opacity(.01);
+            wire2.identity().opacity(.01);
 
         }
         menu.hud().move(0,.25,1).scale(.3,.3,.0001);

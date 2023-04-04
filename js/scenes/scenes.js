@@ -24,8 +24,8 @@ export default () => {
          // { name: "DemoTerrain"       , path: "./demoTerrain.js"       },
          // { name: "DemoRayTrace"      , path: "./demoRayTrace.js"      },
          // { name: "DemoAudio"         , path: "./demoAudio.js"         },
-         // { name: "DemoWire"          , path: "./demoWire.js"          },
-         // { name: "DemoBlending"      , path: "./demoBlending.js"      },
+         { name: "DemoWire"          , path: "./demoWire.js"          },
+         { name: "DemoBlending"      , path: "./demoBlending.js"      },
          { name: "hw5", path: "./hw5.js"},
       ]
    };

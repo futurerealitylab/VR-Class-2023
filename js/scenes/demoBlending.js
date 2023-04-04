@@ -19,9 +19,9 @@
 export const init = async model => {
    let isAnimate = true, isBlending = true, isRubber = true, t = 0;
 
-   model.control('a', 'animate' , () => isAnimate  = ! isAnimate );
-   model.control('b', 'blending', () => isBlending = ! isBlending);
-   model.control('r', 'rubber'  , () => isRubber   = ! isRubber  );
+   // model.control('a', 'animate' , () => isAnimate  = ! isAnimate );
+   // model.control('b', 'blending', () => isBlending = ! isBlending);
+   // model.control('r', 'rubber'  , () => isRubber   = ! isRubber  );
 
    model.color(1,.5,.5);
 

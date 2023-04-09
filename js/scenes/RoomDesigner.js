@@ -72,6 +72,26 @@ export const init = async model => {
    whiteBoard.paths = [];
    whiteBoard.isDrawing = false;
    whiteBoard.isDrawingTmp = false;
+
+   whiteBoard.getWalls = (scale) => {
+      return whiteBoard.paths.map(wall => {
+         const [[startU, startV, startZ], [endU, endV, endZ]] = wall;
+         if (startU === endU){
+            return {
+               direction: "vertical",
+               center: startV + (Math.abs(startV - endV) / 2),
+               length: Math.abs(startV - endV) / 2
+            }
+
+         } else {
+            return {
+               direction: "horizontal",
+               center: startU + (Math.abs(startU - endU) / 2),
+               length: Math.abs(startU - endU) / 2
+            }
+         }
+      })
+   }
       
    model.move(0,1.5,0).scale(.3).animate(() => {
       whiteBoard.hud().move(0, -5, -5).scale(10, 6, .0001);

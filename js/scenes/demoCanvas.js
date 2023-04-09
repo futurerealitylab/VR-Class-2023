@@ -1,5 +1,7 @@
 import { g2 } from "../util/g2.js";
 import { matchCurves } from "../render/core/matchCurves.js";
+import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
+
 /*
    This demo shows examples of 2D canvases in VR.
 */
@@ -84,14 +86,21 @@ export const init = async model => {
    let obj3 = model.add('cube').texture(() => {
       g2.setColor('black');
       g2.textHeight(.1);
-      g2.fillText('This 2D texture uses\na library function to\nrender a bar chart.', .5, .9, 'center');
+      g2.fillText(`test: ${controllerMatrix.left[0]}`, .5, .9, 'center');
+      g2.fillText(`test: ${controllerMatrix.left[1]}`, .5, .8, 'center');
+      g2.fillText(`test: ${controllerMatrix.left[2]}`, .5, .7, 'center');
+      g2.fillText(`test: ${controllerMatrix.left[3]}`, .5, .6, 'center');
+      // g2.fillText(`${controllerMatrix.left.slice(4,8)}`, .5, 1.9, 'center');
+      // g2.fillText(`${controllerMatrix.left.slice(8,12)}`, .5, 2.9, 'center');
+      // g2.fillText(`${controllerMatrix.left.slice(12,15)}`, .5, 3.9, 'center');
 
-      g2.setColor('blue');
-      let values = [];
-      for (let n = 0 ; n < 4 ; n++)
-         values.push(.5 + .4 * Math.sin(n + 3 * model.time));
-      g2.barChart(.25,.1,.5,.5, values, ['frodo','merry','pippin','samwise'],
-                                        ['red','green','blue','magenta']);
+
+   //   g2.setColor('blue');
+   //    let values = [];
+   //    for (let n = 0 ; n < 4 ; n++)
+   //       values.push(.5 + .4 * Math.sin(n + 3 * model.time));
+   //    g2.barChart(.25,.1,.5,.5, values, ['frodo','merry','pippin','samwis e'],
+   //                                      ['red','green','blue','magenta']);
    });
 
    // CLOCK
@@ -117,7 +126,7 @@ export const init = async model => {
    model.move(0,1.5,0).scale(.3).animate(() => {
       obj1.identity().move(2,0,0).turnY(-Math.sin(model.time)).scale(.7,.7,.0001);
       obj2.identity().move(0,-.2,0).scale(.7,.7,.0001);
-      obj3.identity().move(-2,-.2,0).turnY( Math.sin(model.time)).scale(.7,.7,.0001);
+      obj3.identity().move(-2,-.2,0).scale(1,1,.0001);
       obj4.identity().move(0,1.3,0).scale(.5,.5,.0001);
       obj5.identity().move(-2,1.2,0).scale(.5,.5,.0001);
    });

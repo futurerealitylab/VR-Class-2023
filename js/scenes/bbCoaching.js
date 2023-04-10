@@ -2,14 +2,17 @@ import * as global from "../global.js";
 import * as cg from "../render/core/cg.js";
 import {Gltf2Node} from "../render/nodes/gltf2.js";
 
+
+
+
 class Player {
     constructor(gltfUrl) {
         this.node = new Gltf2Node({url: gltfUrl})
         global.gltfRoot.addNode(this.node);
         this.position = null
         this.direction = 0
+        
     }
-
     update() {
         if (this.position) {
             this.node.matrix = cg.mMultiply(cg.mTranslate(this.position), cg.mRotateY(this.direction))
@@ -17,9 +20,25 @@ class Player {
     }
 }
 
+class Court {
+    constructor(gltfUrl) {
+        this.node = new Gltf2Node({url: gltfUrl});
+        global.gltfRoot.addNode(this.node);
+        this.position = null;
+        this.direction = 0;
+    }
+
+    addPlayer(player){
+
+    }
+}
+
+
+
 export const init = async model => {
     model.setTable(false)
-    model.setRoom(true)
+    model.setRoom(false)
+    let currCourt = new Court('./media/gltf/bbCourt/scene.gltf')
     let playerList = []
     const numPlayers = 5
     for (let i = 0; i < numPlayers; i++) {

@@ -8,7 +8,9 @@ export default () => {
 
    return {
       enableSceneReloading: true,
-      scenes: [ 
+      scenes: [
+         { name: "bbCoaching"         , path: "./bbCoaching.js"       },
+          /*
          { name: "DemoSimplest"       , path: "./demoSimplest.js"       },
          { name: "DemoShapes"         , path: "./demoShapes.js"         },
          { name: "DemoRobot"          , path: "./demoRobot.js"          },
@@ -30,6 +32,7 @@ export default () => {
          { name: "DemoGLTF"           , path: "./demoGLTF.js"           },
          { name: "DemoSprite"         , path: "./demoSprite.js"         },
          { name: "DemoIntersect"      , path: "./demoIntersect.js"      },
+           */
       ]
    };
 }

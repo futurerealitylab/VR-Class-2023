@@ -1,0 +1,168 @@
+{
+  "asset": {
+    "generator": "Aspose.3D 23.2",
+    "version": "2.0"
+  },
+  "buffers": [
+    {
+      "byteLength": 0
+    },
+    {
+      "uri": "Basketball_Player.bin",
+      "byteLength": 32009912
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 1,
+      "byteOffset": 3556660,
+      "byteLength": 28453248,
+      "target": 34962,
+      "byteStride": 32
+    },
+    {
+      "buffer": 1,
+      "byteOffset": 0,
+      "byteLength": 3556656,
+      "target": 34963
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "byteOffset": 0,
+      "componentType": 5126,
+      "normalized": false,
+      "count": 720097,
+      "max": [
+        2.223400115966797,
+        2.248699903488159,
+        11.912400245666504
+      ],
+      "min": [
+        -2.228600025177002,
+        -2.2032999992370605,
+        -0.00009999999747378752
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 12,
+      "componentType": 5126,
+      "normalized": false,
+      "count": 720097,
+      "max": [
+        0.9715999960899353,
+        -0.01899999938905239
+      ],
+      "min": [
+        0.013100000098347664,
+        -0.9921000003814697
+      ],
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 20,
+      "componentType": 5126,
+      "normalized": false,
+      "count": 720097,
+      "max": [
+        1.0000044107437134,
+        1.0000044107437134,
+        1.0000044107437134
+      ],
+      "min": [
+        -1.0000044107437134,
+        -1.0000044107437134,
+        -1.0000044107437134
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 0,
+      "componentType": 5125,
+      "normalized": false,
+      "count": 889164,
+      "max": [
+        720096
+      ],
+      "min": [
+        0
+      ],
+      "type": "SCALAR"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ],
+      "name": "Basketball_Player"
+    }
+  ],
+  "nodes": [
+    {
+      "name": "21511_Basketball_Player_Shooting",
+      "matrix": [
+        0.10000000149011612,
+        0,
+        0,
+        0,
+        0,
+        3.4228542222791702e-9,
+        -0.10000000149011612,
+        0,
+        0,
+        0.10000000149011612,
+        3.4228542222791702e-9,
+        0,
+        0,
+        0,
+        0,
+        1
+      ],
+      "mesh": 0
+    }
+  ],
+  "meshes": [
+    {
+      "primitives": [
+        {
+          "material": 0,
+          "mode": 4,
+          "attributes": {
+            "POSITION": 0,
+            "TEXCOORD_0": 1,
+            "NORMAL": 2
+          },
+          "indices": 3
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      },
+      "emissiveFactor": [
+        0,
+        0,
+        0
+      ],
+      "alphaMode": "OPAQUE",
+      "doubleSided": false
+    }
+  ]
+}

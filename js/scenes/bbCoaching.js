@@ -37,27 +37,49 @@ let cal3dPosition = (pos) => {
     return [0,0,0]
 }
 
+
+
+
 class Player {
+
     constructor(gltfUrl, index, position, c) {
-        this.gltfNode = new Gltf2Node({url: gltfUrl})
-        global.gltfRoot.addNode(this.gltfNode);
+        this.node = new Gltf2Node({url: gltfUrl});
+        global.gltfRoot.addNode(this.node);
         this.direction = 0;
         this.position = position; // 2d position in the trackboard (0.0~1.0 , 0.0~1.0). EX, (0.5, 0.5) => (7.5m, 14m).
         this.index = index;
         this.color = c;
     }
-
     update() {
-        this.gltfNode.matrix = cg.mMultiply(cg.mTranslate(cal3dPosition(this.position)), cg.mRotateY(this.direction))
+
+        if (this.position) {
+            this.node.matrix = cg.mMultiply(cg.mTranslate(cal3dPosition(this.position)), cg.mRotateY(this.direction))
+        }
+    }
+}
+
+class Court {
+    constructor(gltfUrl) {
+        this.node = new Gltf2Node({url: gltfUrl});
+        global.gltfRoot.addNode(this.node);
+        this.position = null;
+        this.direction = 0;
+    }
+
+    addPlayer(player){
+
     }
 }
 
 
 export const init = async model => {
+    model.setTable(false)
+    model.setRoom(false)
+    let currCourt = new Court('./media/gltf/bbCourt/scene.gltf')
     let playerList = []
     const numPlayers = 5
     for (let i = 0; i < numPlayers; i++) {
-        playerList.push(new Player("gltf path", i, [.12 + i * .19, .2], colors[i]));
+        playerList.push(new Player("./media/gltf/Basketball_Player/Basketball_Player.gltf", i, [.12 + i * .19, .2], colors[i]));
     }
 
     let curr_player = {

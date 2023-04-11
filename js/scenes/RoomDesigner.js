@@ -1,5 +1,5 @@
 import { g2 } from "../util/g2.js";
-import { buttonState } from "../render/core/controllerInput.js";
+import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
 
 export const init = async model => {
 
@@ -10,6 +10,9 @@ export const init = async model => {
    let wallThickness = 0.01;
    let showWhiteboard = true;
    let leftButtonPrev = false;
+
+   let Aswitch = false;
+   let Condswitch = false;
 
    // const floor = model.add('cube').move(0, -1, 0).scale(100, 0.01, 100)
 
@@ -28,7 +31,7 @@ export const init = async model => {
       } else if (g2.mouseState() == 'drag' && whiteBoard.isDrawing) {
          const uvz = g2.getUVZ(whiteBoard);
 
-         if (uvz && uvz[0]>.1 && uvz[0]<.9) {
+         if (!Aswitch && uvz && uvz[0]>.1 && uvz[0]<.9) {
             whiteBoard.isDrawingTmp = true;
             const [prevU, prevV, _] =  whiteBoard.tmpPath[0];
             const [nextU, nextV, nextZ] =  uvz;
@@ -41,7 +44,7 @@ export const init = async model => {
 
          }
 
-      } else if (g2.mouseState() == 'release' && whiteBoard.isDrawing) {
+      } else if (!Aswitch && g2.mouseState() == 'release' && whiteBoard.isDrawing) {
          const uvz = g2.getUVZ(whiteBoard);
 
          const [prevU, prevV, _] =  whiteBoard.tmpPath[0];
@@ -66,7 +69,7 @@ export const init = async model => {
          g2.drawPath(whiteBoard.paths[n]);
       }
 
-      if (whiteBoard.tmpPath.length > 0 && whiteBoard.isDrawingTmp){
+      if (!Aswitch && whiteBoard.tmpPath.length > 0 && whiteBoard.isDrawingTmp){
          console.log(whiteBoard.tmpPath)
          g2.setColor([0.5,0.5,0.5]);
          g2.lineWidth(.002);
@@ -102,6 +105,8 @@ export const init = async model => {
          }
       })
    }
+   
+   let handPanel = model.add('cube').texture('media/textures/colors.jpg').opacity(.01);
       
    model.animate(() => {
 
@@ -131,6 +136,23 @@ export const init = async model => {
                .scale(wallThickness, wallHeight, length)
          }
       })
-
+      let m = views[0]._viewMatrix;
+      let ml = controllerMatrix.left;
+      handPanel.identity().scale(.3).move(3.35*ml.slice(12,15)[0],3.35*ml.slice(12,15)[1],3.35*ml.slice(12,15)[2]);
+      let hP = handPanel.getMatrix().slice(12,15);
+      handPanel.setMatrix([m[0],m[4],m[8],0,m[1],m[5],m[9],0,m[2],m[6],m[10],0,hP[0],hP[1],hP[2],1]).scale(.2,.2,.01);
+      if(!Condswitch && buttonState.left[1].pressed){
+         Condswitch = true;
+         Aswitch = !Aswitch;
+         if(Aswitch){
+            handPanel.opacity(.8);
+         }
+         else{
+            handPanel.opacity(.01);
+         }
+      }
+      else if(!buttonState.left[1].pressed){
+         Condswitch = false;
+      }
    });
 }

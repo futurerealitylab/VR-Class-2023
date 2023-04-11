@@ -1,9 +1,17 @@
 import { g2 } from "../util/g2.js";
-import { controllerMatrix, buttonState, joyStickState } from "../render/core/controllerInput.js";
+import { buttonState } from "../render/core/controllerInput.js";
 
 export const init = async model => {
 
    model.setTable(false);
+   model.setRoom(false);
+
+   let wallHeight = 0.5;
+   let wallThickness = 0.01;
+   let showWhiteboard = true;
+   let leftButtonPrev = false;
+
+   // const floor = model.add('cube').move(0, -1, 0).scale(100, 0.01, 100)
 
    let whiteBoard = model.add('cube').texture(() => {
       g2.setColor('white');
@@ -79,21 +87,50 @@ export const init = async model => {
          if (startU === endU){
             return {
                direction: "vertical",
-               center: startV + (Math.abs(startV - endV) / 2),
+               centerX: startV + (Math.abs(startV - endV) / 2),
+               centerY: startU,
                length: Math.abs(startV - endV) / 2
             }
 
          } else {
             return {
                direction: "horizontal",
-               center: startU + (Math.abs(startU - endU) / 2),
+               centerX: startU + (Math.abs(startU - endU) / 2),
+               centerY: startV,
                length: Math.abs(startU - endU) / 2
             }
          }
       })
    }
       
-   model.move(0,1.5,0).scale(.3).animate(() => {
-      whiteBoard.hud().move(0, -5, -5).scale(10, 6, .0001);
+   model.animate(() => {
+
+      let leftButtonCurr = buttonState.left[2].pressed
+
+      if (!leftButtonCurr && leftButtonPrev) {
+         showWhiteboard = !showWhiteboard;
+      }
+      leftButtonPrev = leftButtonCurr
+
+      whiteBoard.hud().scale(1, 1, .0001).opacity(showWhiteboard ? 1 : 0);
+
+      const walls = whiteBoard.getWalls()
+      console.log(walls)
+
+      walls.forEach(wall => {
+         const { direction, centerX, centerY, length } = wall;
+
+         if (direction === 'horizontal') {
+            model.add('cube')
+               .move(centerX, 0.5, centerY)
+               .scale(length, wallHeight, wallThickness)
+            
+         } else if (direction === 'vertical') {
+            model.add('cube')
+               .move(centerX, 0.5, centerY)
+               .scale(wallThickness, wallHeight, length)
+         }
+      })
+
    });
 }

@@ -1,73 +1,75 @@
 import * as global from "../global.js";
 import * as cg from "../render/core/cg.js";
 import {Gltf2Node} from "../render/nodes/gltf2.js";
-import { g2 } from "../util/g2.js";
-import { buttonState } from "../render/core/controllerInput.js";
+import {g2} from "../util/g2.js";
+import {buttonState} from "../render/core/controllerInput.js";
 
 
-let num_1_color = '#32a852', 
-    num_2_color = '#3e32a8', 
-    num_3_color = '#eaf04d', 
-    num_4_color = '#e36e14', 
+let num_1_color = '#32a852',
+    num_2_color = '#3e32a8',
+    num_3_color = '#eaf04d',
+    num_4_color = '#e36e14',
     num_5_color = '#f50fb7';
 
 let colors = [num_1_color, num_2_color, num_3_color, num_4_color, num_5_color];
 
 // press right[1] to show hud, press again to hide it
-let hudIsShown = false;
-let hud_buttonLock = false;
-let hud_buttonHandler = () => {
-    if (buttonState.right[1].pressed && !hud_buttonLock) {
+let hudIsShown = true;
+let hudButtonLock = false;
+let hudButtonHandler = () => {
+    if (buttonState.right[1].pressed && !hudButtonLock) {
         hudIsShown = !hudIsShown;
-        hud_buttonLock = true;
+        hudButtonLock = true;
     }
 
     if (!buttonState.right[1].pressed) {
-        hud_buttonLock = false;
+        hudButtonLock = false;
     }
 }
 
 let calPosInField = (pos) => {
-    return [15 * pos[0], 28 * pos[1]];
+    return [15 * (pos[0] - .5), 28 * (pos[1] - .5)];
 }
-
-// convert the 2d position in the trackboard to the 3d position in the field model.
-let cal3dPosition = (pos) => {
-    //TODO
-    return [0,0,0]
-}
-
-
 
 
 class Player {
 
-    constructor(gltfUrl, index, position, c) {
+    constructor(gltfUrl, index, initialPosition, c) {
         this.node = new Gltf2Node({url: gltfUrl});
         global.gltfRoot.addNode(this.node);
         this.direction = 0;
-        this.position = position; // 2d position in the trackboard (0.0~1.0 , 0.0~1.0). EX, (0.5, 0.5) => (7.5m, 14m).
+        this.position = initialPosition;
         this.index = index;
         this.color = c;
     }
-    update() {
 
+    pos3D() {
+        return this.position
+    }
+
+    pos2D() {
+        return this.position.slice(0, 2)
+    }
+
+    update() {
         if (this.position) {
-            this.node.matrix = cg.mMultiply(cg.mTranslate(cal3dPosition(this.position)), cg.mRotateY(this.direction))
+            this.node.matrix = cg.mMultiply(cg.mTranslate(this.position[0] * Court.width, this.position[2], -this.position[1] * Court.height), cg.mRotateY(this.direction))
         }
     }
 }
 
 class Court {
+    static width = 15 / 4
+    static height = 28 / 4
     constructor(gltfUrl) {
-        this.node = new Gltf2Node({url: gltfUrl});
-        global.gltfRoot.addNode(this.node);
-        this.position = null;
-        this.direction = 0;
+        this.node = new Gltf2Node({url: gltfUrl})
+        global.gltfRoot.addNode(this.node)
+        this.direction = 0
+
     }
 
-    addPlayer(player){
-
+    static position2DTo3D(pos2D) {
+        return [pos2D[0], pos2D[1], 0]
     }
 }
 
@@ -79,60 +81,55 @@ export const init = async model => {
     let playerList = []
     const numPlayers = 5
     for (let i = 0; i < numPlayers; i++) {
-        playerList.push(new Player("./media/gltf/Basketball_Player/Basketball_Player.gltf", i, [.12 + i * .19, .2], colors[i]));
+        playerList.push(new Player("./media/gltf/Basketball_Player/Basketball_Player.gltf", i, [1., (i - 2) * .2, 0], colors[i]));
     }
 
-    let curr_player = {
-        value: 0
+    let boardBase = model.add()
+
+    let tacticBoard = boardBase.add('cube').texture(() => {
+        g2.setColor('white');
+        g2.fillRect(0, 0, 1, 1);
+        g2.textHeight(.04)
+        g2.setColor('blue');
+        g2.fillText('Moving Player: #' + (tacticBoard.currPlayer + 1), .75, .84, 'center');
+        g2.setColor('black');
+        g2.textHeight(.04);
+        for (let i = 0; i < playerList.length; i++) {
+            let pos2D = playerList[i].pos2D()
+            g2.fillText('(' + (pos2D[0].toFixed(1)) + ', ', .80, .12 + i * .15, 'center');
+            g2.fillText('' + (pos2D[1].toFixed(1)) + ')', .895, .12 + i * .15, 'center');
+        }
+        g2.textHeight(.05);
+        g2.fillText('Tactic Board', .5, .95, 'center');
+        g2.drawWidgets(tacticBoard);
+    });
+
+    tacticBoard.currPlayer = 0
+
+    g2.addTrackpad(tacticBoard, .3, .47, '#ff8080', ' ', () => {
+    }, 1, playerList, tacticBoard);
+    for (let i = 0; i < numPlayers; i++) {
+        g2.addWidget(tacticBoard, 'button', .65, .12 + i * .15, colors[i], '#' + i, () => {
+            tacticBoard.currPlayer = i
+        }, 0.9);
     }
 
-    let board_base = model.add();
+    let fieldMap = boardBase.add('cube').texture('../media/textures/field.png');
 
-    let createTable = () => {
-        let tactic_board = board_base.add('cube').texture(() => {
-            g2.setColor('white');
-            g2.fillRect(0,0,1,1);
-            g2.textHeight(.04)
-            g2.setColor('blue');
-            g2.fillText('Moving Player: #' + (curr_player.value+1), .75, .84, 'center');
-            g2.setColor('black');
-            g2.textHeight(.04);
-            for (let i = 0; i < playerList.length; i++) {
-                let posInField = calPosInField(playerList[i].position);
-                g2.fillText('(' + (posInField[0].toFixed(1)) + ', ', .80, .12 + i * .15, 'center');
-                g2.fillText('' + (posInField[1].toFixed(1)) + ')', .895, .12 + i * .15, 'center');    
-            }
-            g2.textHeight(.05);
-            g2.fillText('Tactic Board', .5, .95, 'center');
-            g2.drawWidgets(tactic_board);
-         });
-         tactic_board.value = [.5,.5];
-         g2.addTrackpad(tactic_board, .3, .47, '#ff8080', ' ', () => {}, 1, playerList, curr_player);
-         g2.addWidget(tactic_board, 'button', .65, .72, num_1_color, '#1', () => {curr_player.value = 0}, 0.9);
-         g2.addWidget(tactic_board, 'button', .65, .57, num_2_color, '#2', () => {curr_player.value = 1}, 0.9);
-         g2.addWidget(tactic_board, 'button', .65, .42, num_3_color, '#3', () => {curr_player.value = 2}, 0.9);
-         g2.addWidget(tactic_board, 'button', .65, .27, num_4_color, '#4', () => {curr_player.value = 3}, 0.9);
-         g2.addWidget(tactic_board, 'button', .65, .12, num_5_color, '#5', () => {curr_player.value = 4}, 0.9);
-    
-         let field_map = board_base.add('cube').texture('../media/textures/field.png');
-         
-         tactic_board.identity().move(0,0,0).scale(.6, .6, .0001);
-         field_map.identity().move(-0.24,-0.035,0.0002).scale(.46,.51,.0001).opacity(0.2);
-    }
-
-
+    tacticBoard.identity().scale(.6, .6, .0001);
+    fieldMap.identity().move(-0.24, -0.035, 0.0002).scale(.46, .51, .0001).opacity(0.2);
 
     model.animate(() => {
-        board_base.identity().board_hud().scale(1.3);
+        boardBase.identity().boardHud().scale(1.3);
 
-        hud_buttonHandler();
+        hudButtonHandler();
 
         if (hudIsShown) {
-            if (board_base._children.length == 0) {
-                createTable();
+            if (boardBase._children.length === 0) {
+                boardBase._children.push(tacticBoard)
             }
         } else {
-            board_base._children = [];
+            boardBase._children = [];
         }
 
         for (let i = 0; i < numPlayers; i++) {

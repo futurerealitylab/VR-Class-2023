@@ -3747,11 +3747,10 @@ function Node(_form) {
       return this;
    }
 
-   this.board_hud = () => {
+   this.boardHud = () => {
       this._isHUD = true;
       this.setMatrix(this.inverseViewMatrix()).turnX(-3.14/18).move(0,0,-1).scale(1 / (window.vr ? 2 : fl));
       return this;
-
    }
 
    this.audio = src => {return this;}

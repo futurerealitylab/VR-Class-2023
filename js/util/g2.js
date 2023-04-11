@@ -47,7 +47,12 @@ function G2() {
       return widgets[widgets.length - 1];
    }
 
+   this.addTrackpad = (obj, x, y, color, label, action, size, pList, curr_p) => {
+      widgets.push(new bbCoaching_Trackpad(obj, x, y, color, label, action, size, pList, curr_p));
+   }
+
    this.getUVZ = obj => this.computeUVZ(obj.getGlobalMatrix());
+   this.getUVZ_R = obj => this.computeUVZ_R(obj.getGlobalMatrix());
 
    let activeWidget = null;
 
@@ -101,7 +106,7 @@ function G2() {
       let w = textWidth(label) + .02 * size, h = .1 * size;
       this.setLabel = str => label = str;
       this.isWithin = () => {
-         let uvz = g2.getUVZ(obj);
+         let uvz = g2.getUVZ_R(obj);
          return uvz && uvz[0] > x-w/2 && uvz[0] < x+w/2 && uvz[1] > y-h/2 && uvz[1] < y+h/2;
       }
       this.handleEvent = () => {
@@ -118,6 +123,7 @@ function G2() {
          g2.setColor(color, isPressed ? .5 : this.isWithin() ? .7 : 1);
          g2.fillRect(x-w/2, y-h/2, w, h);
          g2.setColor('black');
+         g2.textHeight(.07 * size);
          g2.fillText(Array.isArray(label) ? label[this.state] : label, x, y, 'center');
 	 drawWidgetOutline(x,y,w,h, isPressed);
       }
@@ -248,6 +254,48 @@ function G2() {
       }
    }
 
+   let bbCoaching_Trackpad = function(obj, x, y, color, label, action, size, pList, curr_p) {
+
+      
+      size = cg.def(size, 1);
+      this.obj = obj;
+      let w = .45 * size, h = .84 * size;
+      this.isWithin = () => {
+         let uvz = g2.getUVZ_R(obj);
+         return uvz && uvz[0] > x-w/2 && uvz[0] < x+w/2 && uvz[1] > y-h/2 && uvz[1] < y+h/2;
+      }
+      this.handleEvent = () => {
+         let uvz = g2.getUVZ_R(obj);
+	 if (uvz) {
+            pList[curr_p.value].position[0] = Math.max(0, Math.min(1, (uvz[0] - (x-w/2)) / w));
+            pList[curr_p.value].position[1] = Math.max(0, Math.min(1, (uvz[1] - (y-h/2)) / h));
+            if (action && mouseState == 'drag')
+               action();
+         }
+      }
+      this.draw = () => {
+         g2.textHeight(.09 * size);
+         let isPressed = this == activeWidget && (mouseState == 'press' || mouseState == 'drag');
+         g2.setColor(color, isPressed ? .75 : this.isWithin() ? .85 : 1);
+         g2.fillRect(x-w/2, y-h/2, w, h);
+         g2.setColor(color, isPressed ? .375 : this.isWithin() ? .475 : .5);
+         // g2.setColor('#00000080');
+         // g2.fillRect(x-w/2 + w*value[0] - .005 * size, y-h/2, .01 * size, h);
+         // g2.fillRect(x-w/2, y-h/2 + h*value[1] - .005 * size, w, .01 * size);
+         for (let i = 0; i < pList.length; i++) {
+            let this_p = pList[i];
+            let pos = this_p.position;
+            g2.setColor(this_p.color);
+            g2.fillRect(x-w/2 + w*pos[0] - .015 * size, y-h/2 + h*pos[1] - .015 * size, .03*size, .03*size);
+         }
+         // g2.setColor('#32a852');
+         // g2.fillRect(x-w/2 + w*value[0] - .005 * size, y-h/2 + h*value[1] - .005 * size, .01*size, .01*size);
+         g2.setColor('black');
+         g2.fillText(label, x, y, 'center');
+	 drawWidgetOutline(x,y,w,h, isPressed);
+      }
+   }
+
    this.arrow = (a,b) => {
       this.drawPath([a,b]);
       let r = c2w(context.lineWidth);
@@ -267,6 +315,19 @@ function G2() {
          let L = lcb.hitRect(objMatrix);
          let R = rcb.hitRect(objMatrix);
 	 return L ? L : R ? R : null;
+      }
+   }
+
+   this.computeUVZ_R = objMatrix => {
+      if (! window.vr) {
+         let w = screen.width, h = screen.height;
+         return cg.mHitRect(cg.mMultiply(cg.mInverse(views[0].viewMatrix),
+                                         cg.mAimZ([.965*(1-mouseX/(w/2)),
+			                           .965*(mouseY/(w/2)-h/w),5])), objMatrix);
+      }
+      else {
+         let R = rcb.hitRect(objMatrix);
+	 return R ? R : null;
       }
    }
    this.drawOval = (x,y,w,h) => {

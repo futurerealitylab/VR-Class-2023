@@ -289,8 +289,7 @@ function G2() {
                 let this_p = pList[i];
                 let pos = this_p.position;
                 g2.setColor(this_p.color);
-                g2.fillRect(x - w / 2 + w * (pos[0]+1)/2 - .015 * size, y - h / 2 + h * (pos[1]+1)/2 - .015 * size, .03 * size, .03 * size);
-                // g2.fillRect(x - w / 2 + w * pos[0] - .015 * size, y - h / 2 + h * pos[1] - .015 * size, .03 * size, .03 * size);
+                g2.fillRect(x + w * pos[0] / 2 - .015 * size, y + h * pos[1] / 2 - .015 * size, .03 * size, .03 * size);
             }
             g2.setColor('black');
             g2.fillText(label, x, y, 'center');

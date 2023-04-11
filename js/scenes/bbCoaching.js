@@ -4,14 +4,7 @@ import {Gltf2Node} from "../render/nodes/gltf2.js";
 import {g2} from "../util/g2.js";
 import {buttonState} from "../render/core/controllerInput.js";
 
-
-let num_1_color = '#32a852',
-    num_2_color = '#3e32a8',
-    num_3_color = '#eaf04d',
-    num_4_color = '#e36e14',
-    num_5_color = '#f50fb7';
-
-let colors = [num_1_color, num_2_color, num_3_color, num_4_color, num_5_color];
+let colors = ['#32a852', '#3e32a8', '#eaf04d', '#e36e14', '#f50fb7'];
 
 // press right[1] to show hud, press again to hide it
 let hudIsShown = true;
@@ -25,10 +18,6 @@ let hudButtonHandler = () => {
     if (!buttonState.right[1].pressed) {
         hudButtonLock = false;
     }
-}
-
-let calPosInField = (pos) => {
-    return [15 * (pos[0] - .5), 28 * (pos[1] - .5)];
 }
 
 
@@ -61,6 +50,7 @@ class Player {
 class Court {
     static width = 15 / 4
     static height = 28 / 4
+
     constructor(gltfUrl) {
         this.node = new Gltf2Node({url: gltfUrl})
         global.gltfRoot.addNode(this.node)

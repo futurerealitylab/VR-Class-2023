@@ -3746,6 +3746,13 @@ function Node(_form) {
       this.setMatrix(this.inverseViewMatrix()).move(0,0,-1).scale(1 / (window.vr ? 2 : fl));
       return this;
    }
+
+   this.boardHud = () => {
+      this._isHUD = true;
+      this.setMatrix(this.inverseViewMatrix()).turnX(-3.14/18).move(0,0,-1).scale(1 / (window.vr ? 2 : fl));
+      return this;
+   }
+
    this.audio = src => {return this;}
    this.playAudio = () => {return this;}
    this.pauseAudio = () => {return this;}

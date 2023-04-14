@@ -107,6 +107,10 @@ export const init = async model => {
    }
    
    let handPanel = model.add('cube').texture('media/textures/colors.jpg').opacity(.01);
+
+   // A list of wallIds used to determine if a canvas path has
+   // already been added to the model or not
+   const drawnWalls = [];
       
    model.animate(() => {
 
@@ -120,22 +124,26 @@ export const init = async model => {
       whiteBoard.hud().scale(1, 1, .0001).opacity(showWhiteboard ? 1 : 0);
 
       const walls = whiteBoard.getWalls()
-      console.log(walls)
 
       walls.forEach(wall => {
          const { direction, centerX, centerY, length } = wall;
-
-         if (direction === 'horizontal') {
-            model.add('cube')
-               .move(centerX, 0.5, centerY)
-               .scale(length, wallHeight, wallThickness)
-            
-         } else if (direction === 'vertical') {
-            model.add('cube')
-               .move(centerX, 0.5, centerY)
-               .scale(wallThickness, wallHeight, length)
+         const drawnWallId = `${direction} ${centerX}${centerY} ${length}`;
+         // Only draw the wall if it has not been drawn already
+         if (!drawnWalls.includes(drawnWallId)) {
+            drawnWalls.push(drawnWallId);
+            if (direction === 'horizontal') {
+               model.add('cube')
+                  .move(centerX, 0.5, centerY)
+                  .scale(length, wallHeight, wallThickness)
+               
+            } else if (direction === 'vertical') {
+               model.add('cube')
+                  .move(centerX, 0.5, centerY)
+                  .scale(wallThickness, wallHeight, length)
+            }
          }
       })
+
       let m = views[0]._viewMatrix;
       let ml = controllerMatrix.left;
       handPanel.identity().scale(.3).move(3.35*ml.slice(12,15)[0],3.35*ml.slice(12,15)[1],3.35*ml.slice(12,15)[2]);

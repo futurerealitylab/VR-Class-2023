@@ -286,10 +286,16 @@ function G2() {
             g2.fillRect(x - w / 2, y - h / 2, w, h);
             g2.setColor(color, isPressed ? .375 : this.isWithin() ? .475 : .5);
             for (let i = 0; i < pList.length; i++) {
-                let this_p = pList[i];
-                let pos = this_p.position;
-                g2.setColor(this_p.color);
-                g2.fillRect(x + w * pos[0] / 2 - .015 * size, y + h * pos[1] / 2 - .015 * size, .03 * size, .03 * size);
+                let player = pList[i];
+                let pos = player.pos2D();
+                // draw player box
+                g2.setColor(player.color);
+                let posOnTrackPad = [x + w * pos[0] / 2, y + h * pos[1] / 2]
+                g2.fillRect(posOnTrackPad[0] - .015 * size, posOnTrackPad[1] - .015 * size, .03 * size, .03 * size);
+
+                // draw direction arrow
+                g2.lineWidth(.005);
+                g2.arrow(posOnTrackPad, [posOnTrackPad[0] + Math.cos(player.direction)*.05, posOnTrackPad[1] + Math.sin(player.direction)*.05]);
             }
             g2.setColor('black');
             g2.fillText(label, x, y, 'center');

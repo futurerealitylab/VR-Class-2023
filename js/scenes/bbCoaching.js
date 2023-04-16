@@ -2,7 +2,7 @@ import * as global from "../global.js";
 import * as cg from "../render/core/cg.js";
 import {Gltf2Node} from "../render/nodes/gltf2.js";
 import {g2} from "../util/g2.js";
-import {buttonState} from "../render/core/controllerInput.js";
+import {buttonState, joyStickState} from "../render/core/controllerInput.js";
 
 let colors = ['#32a852', '#3e32a8', '#eaf04d', '#e36e14', '#f50fb7'];
 
@@ -119,6 +119,7 @@ export const init = async model => {
                 boardBase._children.push(tacticBoard)
                 boardBase._children.push(fieldMap)
             }
+            playerList[tacticBoard.currPlayer].direction += 2 * model.deltaTime * joyStickState.right.x
         } else {
             boardBase._children = [];
         }

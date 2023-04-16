@@ -14,6 +14,8 @@ export const init = async model => {
    let Aswitch = false;
    let Condswitch = false;
 
+   const roomScale = 20;
+
    // const floor = model.add('cube').move(0, -1, 0).scale(100, 0.01, 100)
 
    let whiteBoard = model.add('cube').texture(() => {
@@ -63,16 +65,15 @@ export const init = async model => {
       }
 
       g2.setColor([0,0,0]);
-      g2.lineWidth(.002);
+      g2.lineWidth(.008);
 
       for (let n = 0 ; n < whiteBoard.paths.length ; n++){
          g2.drawPath(whiteBoard.paths[n]);
       }
 
       if (!Aswitch && whiteBoard.tmpPath.length > 0 && whiteBoard.isDrawingTmp){
-         console.log(whiteBoard.tmpPath)
          g2.setColor([0.5,0.5,0.5]);
-         g2.lineWidth(.002);
+         g2.lineWidth(.009);
 
          g2.drawPath(whiteBoard.tmpPath);
       }
@@ -80,7 +81,8 @@ export const init = async model => {
    });
 
    whiteBoard.tmpPath = [null, null];
-   whiteBoard.paths = [];
+   whiteBoard.paths = [[[0.2, 0.25, 0], [0.8, 0.25, 0]], [[0.2, 0.75, 0], [0.8, 0.75, 0]], [[0.25, 0.2, 0], [0.25, 0.8, 0]], [[0.75, 0.2, 0], [0.75, 0.8, 0]]];
+   // whiteBoard.paths = [];
    whiteBoard.isDrawing = false;
    whiteBoard.isDrawingTmp = false;
 
@@ -90,17 +92,17 @@ export const init = async model => {
          if (startU === endU){
             return {
                direction: "vertical",
-               centerX: startV + (Math.abs(startV - endV) / 2),
-               centerY: startU,
-               length: Math.abs(startV - endV) / 2
+               centerY:(-0.5 + (Math.min(startV, endV) + (Math.abs(startV - endV) / 2))) * scale,
+               centerX: (-0.5 + (startU)) * scale,
+               length: (Math.abs(startV - endV) / 2) * scale
             }
 
          } else {
             return {
                direction: "horizontal",
-               centerX: startU + (Math.abs(startU - endU) / 2),
-               centerY: startV,
-               length: Math.abs(startU - endU) / 2
+               centerX: (-0.5 + (Math.min(startU, endU) + (Math.abs(startU - endU) / 2))) * scale,
+               centerY: (-0.5 + (startV)) * scale,
+               length: (Math.abs(startU - endU) / 2) * scale
             }
          }
       })
@@ -111,6 +113,8 @@ export const init = async model => {
    // A list of wallIds used to determine if a canvas path has
    // already been added to the model or not
    const drawnWalls = [];
+
+   const floor = model.add("cube").move(0, 0.5, 0).scale(roomScale, 0.001, roomScale)
       
    model.animate(() => {
 
@@ -123,7 +127,7 @@ export const init = async model => {
 
       whiteBoard.hud().scale(1, 1, .0001).opacity(showWhiteboard ? 1 : 0);
 
-      const walls = whiteBoard.getWalls()
+      const walls = whiteBoard.getWalls(roomScale)
 
       walls.forEach(wall => {
          const { direction, centerX, centerY, length } = wall;
@@ -135,11 +139,14 @@ export const init = async model => {
                model.add('cube')
                   .move(centerX, 0.5, centerY)
                   .scale(length, wallHeight, wallThickness)
+                  .color('green')
                
             } else if (direction === 'vertical') {
                model.add('cube')
                   .move(centerX, 0.5, centerY)
                   .scale(wallThickness, wallHeight, length)
+                  .color('red')
+
             }
          }
       })

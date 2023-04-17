@@ -6,8 +6,7 @@ import {buttonState, joyStickState} from "../render/core/controllerInput.js";
 
 let colors = ['#32a852', '#3e32a8', '#eaf04d', '#e36e14', '#f50fb7'];
 
-// press right[1] to show hud, press again to hide it
-let hudIsShown = true;
+let hudIsShown = true;                                              // press right[1] to show hud, press again to hide it
 let hudButtonLock = false;
 let hudButtonHandler = () => {
     if (buttonState.right[1].pressed && !hudButtonLock) {
@@ -20,9 +19,13 @@ let hudButtonHandler = () => {
     }
 }
 
+let timeButton = [];                                                //array used to store the time button widgets
+let startTime = -1;                                                 //starting time of the player
+let endTime = -1;                                                   //ending time of the player
+let started = false;                                                //record if have started the time count or not
+
 
 class Player {
-
     constructor(gltfUrl, index, initialPosition, c) {
         this.node = new Gltf2Node({url: gltfUrl});
         global.gltfRoot.addNode(this.node);
@@ -31,7 +34,7 @@ class Player {
         this.index = index;
         this.color = c;
     }
-
+    
     pos3D() {
         return this.position
     }
@@ -63,6 +66,10 @@ class Court {
     }
 }
 
+let markTime = () =>{
+
+}
+
 
 export const init = async model => {
     model.setTable(false)
@@ -81,7 +88,7 @@ export const init = async model => {
         g2.fillRect(0, 0, 1, 1);
         g2.textHeight(.04)
         g2.setColor('blue');
-        g2.fillText('Moving Player: #' + (tacticBoard.currPlayer + 1), .75, .84, 'center');
+        // g2.fillText('Moving Player: #' + (tacticBoard.currPlayer + 1), .75, .84, 'center');
         g2.setColor('black');
         g2.textHeight(.04);
         for (let i = 0; i < playerList.length; i++) {
@@ -96,7 +103,7 @@ export const init = async model => {
 
     tacticBoard.currPlayer = 0
 
-    g2.addTrackpad(tacticBoard, .3, .47, '#ff8080', ' ', () => {
+    g2.addTrackpad(tacticBoard, .25, .47, '#ff8080', ' ', () => {
     }, 1, playerList, tacticBoard);
     for (let i = 0; i < numPlayers; i++) {
         g2.addWidget(tacticBoard, 'button', .65, .12 + i * .15, colors[i], '#' + i, () => {
@@ -104,10 +111,29 @@ export const init = async model => {
         }, 0.9);
     }
 
+    for (let i = 0; i < 24; i++) {
+        timeButton.push(g2.addWidget(tacticBoard, 'button', .57+ i * .018, .84, '#32a852', " ", () => {
+            if (!started){                                                      //if haven't started time, clear all button color and set the start button to pink.
+                for (let j = 0; j < 24; j++){
+                    timeButton[j].updateColor('#32a852');
+                }
+                timeButton[i].updateColor('#f50fb7');
+                startTime = i;
+            }
+            else{                                                               //if started, then highlight all the buttons in between and record the endTime.
+                endTime = i;
+                for (let j = startTime+1; j <= endTime;j++){
+                    timeButton[j].updateColor('#f50fb7');
+                }
+            }
+            started = !started;                                                 //highlight all recorded time. 
+        }, 0.36));
+    }
+
     let fieldMap = boardBase.add('cube').texture('../media/textures/field.png');
 
-    tacticBoard.identity().scale(.6, .6, .0001).opacity(0);
-    fieldMap.identity().move(-0.24, -0.035, 0.0002).scale(.46, .51, .0001).opacity(0.2);
+    tacticBoard.identity().scale(.9, .9, .0001).opacity(0);
+    fieldMap.identity().move(-0.4, -0.035, 0.0002).scale(.46, .51, .0001).opacity(0.2);
 
     model.animate(() => {
         boardBase.identity().boardHud().scale(1.3);

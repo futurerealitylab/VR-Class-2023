@@ -133,9 +133,15 @@ function G2() {
             g2.setColor('black');
             g2.textHeight(.07 * size);
             g2.fillText(Array.isArray(label) ? label[this.state] : label, x, y, 'center');
-            drawWidgetOutline(x, y, w, h, isPressed);
+            // drawWidgetOutline(x, y, w, h, isPressed);
+        }
+
+        this.updateColor = (newColor) => {                  //update the color of the current button
+            color = newColor;
         }
     }
+
+
 
     let Slider = function (obj, x, y, color, label, action, size) {
         size = cg.def(size, 1);

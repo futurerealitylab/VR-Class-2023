@@ -122,8 +122,14 @@ export const init = async model => {
             }
             else{                                                               //if started, then highlight all the buttons in between and record the endTime.
                 endTime = i;
-                for (let j = startTime+1; j <= endTime;j++){
-                    timeButton[j].updateColor('#f50fb7');
+                if (endTime <= startTime){
+                    timeButton[startTime].updateColor('#32a852');
+                    startTime = -1;
+                }
+                else{
+                    for (let j = startTime+1; j <= endTime;j++){
+                        timeButton[j].updateColor('#f50fb7');
+                    }
                 }
             }
             started = !started;                                                 //highlight all recorded time. 

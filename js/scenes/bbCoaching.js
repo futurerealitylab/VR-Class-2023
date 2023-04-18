@@ -19,20 +19,41 @@ let hudButtonHandler = () => {
     }
 }
 
-let timeButton = [];                                                //array used to store the time button widgets
-let startTime = -1;                                                 //starting time of the player
-let endTime = -1;                                                   //ending time of the player
-let started = false;                                                //record if have started the time count or not
-
 
 class Player {
     constructor(gltfUrl, index, initialPosition, c) {
         this.node = new Gltf2Node({url: gltfUrl});
         global.gltfRoot.addNode(this.node);
         this.direction = 0;
-        this.position = initialPosition;
+        // this.position = initialPosition;
+        this.initialPosition = initialPosition;
         this.index = index;
         this.color = c;
+        // store the position of each time point for this player
+        this.positions = [];
+        // check if a specific time point is within a movement, and be used to find the start/end of a move.
+        this.isMoving = [];
+        for (let i = 0; i < 24; i++) {
+            this.positions.push([initialPosition[0], initialPosition[1], initialPosition[2]]);
+            this.isMoving.push(false);
+        }
+    }
+
+    // get the start and end timepoint of the move
+    // if no action selected return [24,23]
+    // if start point selected but no end point return [s,s], s is the selected point.
+    // if start and end both selected, return [s,e], s < e.
+    getStartAndEnd() {
+        let point = 0;
+        while (point < this.isMoving.length && this.isMoving[point] != true) {
+            point++;
+        }
+        let start = point;
+        while (point < this.isMoving.length && this.isMoving[point] != false) {
+            point++;
+        }
+        let end = point - 1;
+        return [start, end];
     }
     
     pos3D() {
@@ -90,59 +111,115 @@ export const init = async model => {
         g2.setColor('blue');
         // g2.fillText('Moving Player: #' + (tacticBoard.currPlayer + 1), .75, .84, 'center');
         g2.setColor('black');
-        g2.textHeight(.04);
+        g2.textHeight(.03);
         for (let i = 0; i < playerList.length; i++) {
-            let pos2D = playerList[i].pos2D()
-            g2.fillText('(' + (pos2D[0].toFixed(1)) + ', ', .80, .12 + i * .15, 'center');
-            g2.fillText('' + (pos2D[1].toFixed(1)) + ')', .895, .12 + i * .15, 'center');
+            let player = playerList[i];
+            let start = player.getStartAndEnd()[0];
+            let end = player.getStartAndEnd()[1];
+
+            // mark the selected player
+            if (i == tacticBoard.currPlayer) {
+                g2.textHeight(.08);
+                g2.fillText('*', .55, .12 + i * .14, 'center');
+                g2.textHeight(.03);
+            }
+    
+            if (start != 24) {
+                // start point selected
+                g2.fillText(start + ': ' + '(' + (player.positions[start][0].toFixed(1)) + ',' + (player.positions[start][1].toFixed(1)) + ')  ', .8, .14+i*.14, 'center');
+            }
+            if (start < end) {
+                // end point selected
+                g2.fillText(end + ': ' + '(' + (player.positions[end][0].toFixed(1)) + ',' + (player.positions[end][1].toFixed(1)) + ')  ', .8, .1+i*.14, 'center');
+            }
         }
         g2.textHeight(.05);
         g2.fillText('Tactic Board', .5, .95, 'center');
+
+        // draw timeButton label
+        g2.textHeight(.03);
+        g2.fillText('↑', .55, .805, 'center');
+        g2.fillText('0s', .55, .78, 'center');
+        g2.fillText('↑', .965, .805, 'center');
+        g2.fillText('23s', .965, .78, 'center');
+        g2.fillText('-- Time Points --', .76, .79, 'center');
         g2.drawWidgets(tacticBoard);
     });
 
-    tacticBoard.currPlayer = 0
+    tacticBoard.currPlayer = -1;                                                // when no player selected, should be -1.
+    tacticBoard.timeButton = [];                                                //array used to store the time button widgets
+    tacticBoard.startTime = -1;                                                 //starting time of the player
+    tacticBoard.endTime = -1;                                                   //ending time of the player
+    tacticBoard.started_setting = false;                                                //record if have started the time count or not
 
     g2.addTrackpad(tacticBoard, .25, .47, '#ff8080', ' ', () => {
     }, 1, playerList, tacticBoard);
     for (let i = 0; i < numPlayers; i++) {
-        g2.addWidget(tacticBoard, 'button', .65, .12 + i * .15, colors[i], '#' + i, () => {
-            tacticBoard.currPlayer = i
+        g2.addWidget(tacticBoard, 'button', .65, .12 + i * .14, colors[i], '#' + i, () => {
+            tacticBoard.currPlayer = i;
+            // reset the status of tacticBoard.
+            tacticBoard.startTime = -1;
+            tacticBoard.endTime = -1;
+            tacticBoard.started_setting = false;
         }, 0.9);
     }
 
     for (let i = 0; i < 24; i++) {
-        timeButton.push(g2.addWidget(tacticBoard, 'button', .57+ i * .018, .84, '#32a852', " ", () => {
-            if (!started){                                                      //if haven't started time, clear all button color and set the start button to pink.
-                for (let j = 0; j < 24; j++){
-                    timeButton[j].updateColor('#32a852');
+        tacticBoard.timeButton.push(g2.addWidget(tacticBoard, 'button', .55+ i * .018, .84, '#32a852', " ", () => {
+            let player = playerList[tacticBoard.currPlayer];
+            if (!tacticBoard.started_setting) {
+                for (let j = 0; j < 24; j++) {
+                    player.isMoving[j] = false;
+                    player.positions[j] = Array.from(player.initialPosition);
                 }
-                timeButton[i].updateColor('#f50fb7');
-                startTime = i;
-            }
-            else{                                                               //if started, then highlight all the buttons in between and record the endTime.
-                endTime = i;
-                if (endTime <= startTime){
-                    timeButton[startTime].updateColor('#32a852');
-                    startTime = -1;
-                }
-                else{
-                    for (let j = startTime+1; j <= endTime;j++){
-                        timeButton[j].updateColor('#f50fb7');
+                player.isMoving[i] = true;
+                tacticBoard.startTime = i;
+                tacticBoard.endTime = -1;
+            } else {
+                tacticBoard.endTime = i;
+                if (tacticBoard.endTime <= tacticBoard.startTime) {
+                    player.isMoving[tacticBoard.startTime] = false;
+                    tacticBoard.startTime = -1;
+                    tacticBoard.endTime = -1;
+                    for (let j = 0; j < 24; j++) {
+                        player.positions[j] = Array.from(player.initialPosition);
+                    }
+                } else {
+                    for (let j = tacticBoard.startTime+1; j <= tacticBoard.endTime; j++) {
+                        player.isMoving[j] = true;
                     }
                 }
             }
-            started = !started;                                                 //highlight all recorded time. 
+            tacticBoard.started_setting = !tacticBoard.started_setting;
         }, 0.36));
     }
 
     let fieldMap = boardBase.add('cube').texture('../media/textures/field.png');
 
     tacticBoard.identity().scale(.9, .9, .0001).opacity(0);
-    fieldMap.identity().move(-0.4, -0.035, 0.0002).scale(.46, .51, .0001).opacity(0.2);
+    fieldMap.identity().move(-0.45, -0.045, 0.0002).scale(.70, .76, .0001).opacity(0.2);
+
+    let updateTimeButton = () => {
+        if (tacticBoard.currPlayer == -1) {
+            for (let j = 0; j < 24; j++) {
+                tacticBoard.timeButton[j].updateColor('#32a852');
+            }
+        } else {
+            for (let j = 0; j < 24; j++) {
+                if (playerList[tacticBoard.currPlayer].isMoving[j] == true) {
+                    tacticBoard.timeButton[j].updateColor('#f50fb7');
+                } else {
+                    tacticBoard.timeButton[j].updateColor('#32a852');
+                }
+            }
+        }
+    }
 
     model.animate(() => {
         boardBase.identity().boardHud().scale(1.3);
+        // boardBase.identity().move(0,1.5,0).scale(1.3);
+
+        updateTimeButton();
 
         hudButtonHandler();
 

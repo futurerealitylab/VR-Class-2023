@@ -165,7 +165,7 @@ export const init = async model => {
     }
 
     for (let i = 0; i < 24; i++) {
-        tacticBoard.timeButton.push(g2.addWidget(tacticBoard, 'button', .55+ i * .018, .84, '#32a852', " ", () => {
+        tacticBoard.timeButton.push(g2.addWidget(tacticBoard, 'button', .55+ i * .018, .84, '#a0aaba', " ", () => {
             let player = playerList[tacticBoard.currPlayer];
             if (!tacticBoard.started_setting) {
                 for (let j = 0; j < 24; j++) {
@@ -199,17 +199,18 @@ export const init = async model => {
     tacticBoard.identity().scale(.9, .9, .0001).opacity(0);
     fieldMap.identity().move(-0.45, -0.045, 0.0002).scale(.70, .76, .0001).opacity(0.2);
 
+    // update the color of each time button based on the player and time point selected
     let updateTimeButton = () => {
         if (tacticBoard.currPlayer == -1) {
             for (let j = 0; j < 24; j++) {
-                tacticBoard.timeButton[j].updateColor('#32a852');
+                tacticBoard.timeButton[j].updateColor('#a0aaba');
             }
         } else {
             for (let j = 0; j < 24; j++) {
                 if (playerList[tacticBoard.currPlayer].isMoving[j] == true) {
-                    tacticBoard.timeButton[j].updateColor('#f50fb7');
+                    tacticBoard.timeButton[j].updateColor(colors[tacticBoard.currPlayer]);
                 } else {
-                    tacticBoard.timeButton[j].updateColor('#32a852');
+                    tacticBoard.timeButton[j].updateColor('#a0aaba');
                 }
             }
         }

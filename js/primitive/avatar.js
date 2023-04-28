@@ -6,6 +6,7 @@ import { corelink_event } from "../util/corelink_sender.js";
 import * as global from "../global.js";
 
 export function initAvatar(id) {
+  // console.log("init avatar", id)
   let headset = new Headset();
   let leftController = new Controller("left");
   let rightController = new Controller("right");
@@ -106,7 +107,7 @@ export class Headset {
     this.model = new Gltf2Node({ url: './media/gltf/headset/headset.gltf' });
     this.model.scale = vec3.fromValues(1, 1, 1);
     this.model.name = "headset";
-    this.model.visible = false;
+    this.model.visible = true;
   }
 }
 
@@ -132,7 +133,7 @@ export class Controller {
     this.matrix = mat4.fromValues(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     this.model.scale = vec3.fromValues(1, 1, 1);
     this.model.name = "ctrl";
-    this.model.visible = false;
+    this.model.visible = true;
 
     this.updateButtons = function (src, newBtns) {
       // send corelink msg if changed

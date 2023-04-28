@@ -2104,7 +2104,7 @@ let fl = 5;                                                          // CAMERA F
          }
 
          setUniform('1i', 'uWhitescreen', window.isWhitescreen);
-         root.render(vm);
+         root.render(vm); // change this to croquetRoot render
          model.setControls();
       }
 
@@ -3567,6 +3567,39 @@ function Node(_form) {
        rm;
 
    this._form = _form;
+
+   this.initDataTree = (node) => {
+      let childJson = [];
+      if(node._children && node._children.length > 0) {
+         for(let i = 0; i < node._children.length; i ++) {
+            childJson.push(node.child(i).dataTree);
+            console.log("added kid")
+         }
+      }
+      let dataTree = {
+         form: node._form,
+         bevel: node._bevel,
+         blend: node._blend,
+         blur: node._blur,
+         opacity: node._opacity,
+         color: node._color,
+         dull: node._dull,
+         info: node._info,
+         melt: node._melt,
+         // parent: node._parent ? this.initDataTree(node._parent) : null,
+         children: childJson,
+         precision: node._precision,
+         flags: node._flags,
+         isHUD: node._isHUD,
+         animate: node._animate,
+         customShader: node._customShader,
+         texture: node._texture,
+         ignoreParentTransform: node.ignoreParentTransform,
+      }
+      return dataTree;
+   }
+
+   this.dataTree = this.initDataTree(this);
    
    this.setControls = () => {
       if (interactMode != wasInteractMode) {
@@ -3661,8 +3694,15 @@ function Node(_form) {
       child._precision = null;
       child._flags  = null;
       child._customShader = null;
+      this.dataTree.children.push(child.dataTree);
+      // this.dataTree.children.add(childJson);
       return child;
    }
+
+   this.printDataTree = () => {
+      console.log(this.dataTree);
+   }
+
    this.remove = arg => { // ARG CAN BE EITHER AN INDEX OR A CHILD NODE
       let i = arg;
       if (! Number.isInteger(i))
@@ -3702,8 +3742,11 @@ function Node(_form) {
    this.turnZ     = theta   => { m.rotateZ(theta);     return this; }
    this.scale     = (x,y,z) => { m.scale(x,y,z);       return this; }
    this.dull      = value   => { this._dull = value;   return this; }
-   this.color     = (r,g,b) => { this._color = typeof r === 'string' ||
-                                              Array.isArray(r) ? r : [r,g,b]; return this; }
+   this.color     = (r,g,b) => { 
+      this._color = typeof r === 'string' || Array.isArray(r) ? r : [r,g,b]; 
+      this.dataTree.color = this._color;
+      return this; 
+   }
    this.blur      = value   => { this._blur = value;   return this; }
    this.opacity   = value   => { this._opacity = value;return this; }
    this.info      = value   => { if (this.prop('_blend') && this._info != value) activeSet(true);

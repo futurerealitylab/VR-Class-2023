@@ -2,7 +2,9 @@
 // YOUR APPLICATION SHOULD REDEFINE THESE FUNCTIONS:
 
 // import { updateModel } from "../scenes/demoCroquet.js";
-import { updateModel } from "../scenes/seaCroquet.js";
+// import { updateModel, initModel, drawView} from "../scenes/seaCroquet.js";
+import { updateModel} from "../scenes/seaCroquet.js";
+
 import { controllerMatrix,  buttonState, joyStickState} from "../render/core/controllerInput.js";
 import { initAvatar } from "../primitive/avatar.js";
 import * as global from "../global.js";

@@ -23,6 +23,12 @@ let leftTriggerPrev = false;
 let rightTriggerPrev = false;
 let objsInScene = [];
 
+let world = window.clay.model.add();
+for (const objInfo of ItemsToCollect) {
+    let obj = window.clay.model.add('cube');
+    objsInScene.push({ obj: obj, location: objInfo.location, scale: objInfo.scale, matrix: null, inMovement: false, color: [1, 1, 1] });
+}
+
 let isInBox = (p, box) => {
 
     // FIRST TRANSFORM THE POINT BY THE INVERSE OF THE BOX'S MATRIX.
@@ -59,11 +65,11 @@ let placeObjects = () => {
 
 let ifHitAny = (controllerM) => {
     let m = controllerM.slice(12, 15);
-
+    // console.log(`ifHitAny: ${objsInScene.length}`);
     for (let i = 0; i < objsInScene.length; i++) {
-        const b = isInBox(m, objsInScene[i].obj);
-        // console.log(b)
+        const b = isInBox(m, objsInScene[i].obj); 
         if (b) {
+
             objsInScene[i].color = [0, 0, 1];
             return i;
         }else{
@@ -84,7 +90,8 @@ let OnHit = (objIndex, trigger, triggerPrev, m) => {
             prevPos = B;
         else
             // need to send event
-            hitObjInfo.matrix = cg.mMultiply(cg.mTranslate(cg.subtract(B, prevPos)), hitObjInfo.matrix);
+            console.log(`onhit: ${objsInScene.length};; ${hitObjInfo}`)
+            hitObjInfo.matrix = cg.mMultiply(cg.mTranslate(cg.subtract(B, prevPos)), hitObjInfo.obj.getMatrix());
 
         prevPos = B;
     } else if (triggerPrev) {
@@ -94,11 +101,12 @@ let OnHit = (objIndex, trigger, triggerPrev, m) => {
 
 
 export let updateModel = e => {
-    if (window.demoDemoCroquetState) { // use window.demo[your-demo-name]State to see if the demo is active. Only update the croquet interaction when the demo is active.
+    if (window.demoseaCroquetState) { // use window.demo[your-demo-name]State to see if the demo is active. Only update the croquet interaction when the demo is active.
         // e.where => controller matrix, e.info => if trigger previous pressed
         if (e.what == "rightTriggerPressed") {
             let mr = e.where;
             let rightTriggerPrev = e.info;
+            console.log(`revieve`);
             let rightInAny = ifHitAny(mr);
             if (rightInAny != -1) {
                 OnHit(rightInAny, true, rightTriggerPrev, mr);
@@ -120,7 +128,7 @@ export const init = async model => {
     croquet.register('croquetDemo_mydemo');
     model.setTable(false);
 
-    console.log("model in")
+    // console.log("model in")
     let world = model.add();
     let target = world.add('cube');
 
@@ -128,7 +136,8 @@ export const init = async model => {
     let counter = 0;
     for (const objInfo of ItemsToCollect) {
         let obj = world.add('cube');
-        objsInScene.push({ obj: obj, index: counter, location: objInfo.location, scale: objInfo.scale, matrix: null, inMovement: false, color: [1, 1, 1] });
+        objsInScene[counter].obj = obj;
+        // objsInScene.push({ obj: obj, index: counter, location: objInfo.location, scale: objInfo.scale, matrix: null, inMovement: false, color: [1, 1, 1] });
         counter += 1;
     }
 

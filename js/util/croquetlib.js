@@ -2,9 +2,8 @@
 // YOUR APPLICATION SHOULD REDEFINE THESE FUNCTIONS:
 
 // import { updateModel } from "../scenes/demoCroquet.js";
-// import { updateModel, initModel, drawView} from "../scenes/seaCroquet.js";
-import { updateModel} from "../scenes/seaCroquet.js";
-
+import { updateModel, initModel, drawView} from "../scenes/seaCroquet.js";
+// import { updateModel} from "../scenes/seaCroquet.js";
 import { controllerMatrix,  buttonState, joyStickState} from "../render/core/controllerInput.js";
 import { initAvatar } from "../primitive/avatar.js";
 import * as global from "../global.js";
@@ -16,9 +15,9 @@ let preRightTrigger = {pressed: false, touched: false, value: 0};
 let preLeftTrigger = { pressed: false, touched: false, value: 0 };
 window.color = [Math.random(), Math.random(), Math.random()]
 /////////////////////////////////////////////////////////////////
-let initModel = () => {
-   // if(!croquetModel.scene) croquetModel.scene =  window.clay.model.dataTree;
-}
+// let initModel = () => {
+//    // if(!croquetModel.scene) croquetModel.scene =  window.clay.model.dataTree;
+// }
 
 let drawAvatar = actor => {
    let avatarInfo = actor.avatarPos;
@@ -32,9 +31,9 @@ let drawAvatar = actor => {
    }
 }
 
-let drawView    = () => {
+// let drawView    = () => {
    
-}
+// }
 
 
 export class Model extends Croquet.Model {
@@ -149,10 +148,17 @@ export class View extends Croquet.View {
       if (buttonState.right[0].pressed) {
          this.event('rightTriggerPressed', controllerMatrix.right, preRightTrigger);
      }
+     if(preRightTrigger && !buttonState.right[0].pressed) {
+      this.event('rightTriggerRelease', controllerMatrix.right, preRightTrigger)
+      }
 
      if (buttonState.left[0].pressed) {
          this.event('leftTriggerPressed', controllerMatrix.left, preLeftTrigger);
      }
+
+     if(preLeftTrigger && !buttonState.left[0].pressed) {
+      this.event('leftTriggerRelease', controllerMatrix.right, preLeftTrigger)
+      }
 
      this.publish(this.viewId, "updatePos", avatarJson);
      preRightTrigger = buttonState.right[0].pressed;

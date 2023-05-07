@@ -1,15 +1,17 @@
 
 // YOUR APPLICATION SHOULD REDEFINE THESE FUNCTIONS:
 
-import { updateModel } from "../scenes/demoCroquet.js";
+// import { updateModel } from "../scenes/demoCroquet.js";
+import { updateModel } from "../scenes/seaCroquet.js";
 import { controllerMatrix,  buttonState, joyStickState} from "../render/core/controllerInput.js";
 import { initAvatar } from "../primitive/avatar.js";
 import * as global from "../global.js";
 
 // YOU SHOULD OBTAIN YOUR OWN apiKey FROM: croquet.io/keys
 
-let apiKey = '16JKtOOpBuJsmaqgLzMCFyLPg9mqtNhxtObIsoj4b';
+let apiKey = '17z9hr9nbu0btvJnKip9KNbPfM9by2vbPldPhHago';
 let preRightTrigger = {pressed: false, touched: false, value: 0};
+let preLeftTrigger = { pressed: false, touched: false, value: 0 };
 window.color = [Math.random(), Math.random(), Math.random()]
 /////////////////////////////////////////////////////////////////
 let initModel = () => {
@@ -140,11 +142,19 @@ export class View extends Croquet.View {
          "joyStickState": joyStickState,
          "VR": window.vr,
       }
-      if(preRightTrigger && !buttonState.right[0].pressed) {
-      this.event('rightTriggerRelease', controllerMatrix.right, this.color)
-      }
-      this.publish(this.viewId, "updatePos", avatarJson);
-      preRightTrigger = buttonState.right[0].pressed;
+
+      // send event
+      if (buttonState.right[0].pressed) {
+         this.event('rightTriggerPressed', controllerMatrix.right, preRightTrigger);
+     }
+
+     if (buttonState.left[0].pressed) {
+         this.event('leftTriggerPressed', controllerMatrix.left, preLeftTrigger);
+     }
+
+     this.publish(this.viewId, "updatePos", avatarJson);
+     preRightTrigger = buttonState.right[0].pressed;
+     preLeftTrigger = buttonState.left[0].pressed;
 
       window.view = this;
       drawView();

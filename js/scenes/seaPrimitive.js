@@ -1,7 +1,5 @@
 import { controllerMatrix, buttonState, joyStickState, viewMatrix } from "../render/core/controllerInput.js";
-import { lcb, rcb } from '../handle_scenes.js';
 import * as cg from "../render/core/cg.js";
-import { SimulateMovement } from './simulateMovement.js';
 import { g2 } from "../util/g2.js";
 
 const ItemsToCollect =
@@ -84,7 +82,10 @@ export const init = async model => {
             const b = isInBox(m, objsInScene[i].obj);
             // console.log(b)
             if (b) {
+                objsInScene[i].color = [0, 0, 1];
                 return i;
+            }else{
+                objsInScene[i].color = [1, 1, 1];
             }
         }
         return -1;
@@ -92,7 +93,6 @@ export const init = async model => {
 
     let OnHit = (objIndex, trigger, triggerPrev, m) => {
         let hitObjInfo = objsInScene[objIndex];
-        let hitObj = objsInScene[objIndex].obj;
         hitObjInfo.color= [0, 0, 1];
 
         // console.log(` pressed: ${trigger}`);
@@ -109,7 +109,7 @@ export const init = async model => {
             hitObjInfo.inMovement = true;
         }
 
-        // croquet update matrix using objIndex
+        // croquet update each object matrix using objIndex
     }
 
     let isSuccess = () => {
@@ -119,7 +119,7 @@ export const init = async model => {
             const b = isInBox(objsInScene[i].obj.getGlobalMatrix().slice(12,15), target);
             
             if (b) {
-                objsInScene[i].color = [0,1,1];
+                objsInScene[i].color = [0,1,0];
                 counter +=1;
             }
         }

@@ -10,6 +10,7 @@ export let updateModel = e => {
 
 export const init = async model => {
     croquet.register('croquetDemo_1.0');
+    model.setTable(false);
     model.animate(() => {
     });
  }

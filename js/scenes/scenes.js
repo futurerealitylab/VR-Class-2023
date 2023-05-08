@@ -7,7 +7,7 @@ export default () => {
    })).name = "backGround";
 
    return {
-      enableSceneReloading: true,
+      enableSceneReloading: false,
       scenes: [ 
          // { name: "DemoSimplest"       , path: "./demoSimplest.js"       },
          // { name: "DemoShapes"         , path: "./demoShapes.js"         },
@@ -30,8 +30,7 @@ export default () => {
          // { name: "DemoGLTF"           , path: "./demoGLTF.js"           },
          // { name: "DemoSprite"         , path: "./demoSprite.js"         },
          // { name: "DemoIntersect"      , path: "./demoIntersect.js"      },
-         { name: "hw8-1", path: "./hw8-1.js"},
-         { name: "hw8-2", path: "./hw8-2.js"},
+         { name: "DemoCroquet"        , path: "./demoCroquet.js"      },
       ]
    };
 }

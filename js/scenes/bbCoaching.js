@@ -10,6 +10,7 @@ let currTime = 0
 let HUDIsShown = false;      // press right[1] to show hud, press again to hide it
 let hudButtonLock = false;
 let currPlayerIndex = -1;
+let drawButtonLock = false;
 
 let hudButtonHandler = () => {
     if (buttonState.right[1] && buttonState.right[1].pressed && !hudButtonLock) {
@@ -118,6 +119,10 @@ export const init = async model => {
             boardBase._children = [playerBoard, fieldMap]
             playerBoard.ID = i;
             currPlayerIndex = i;
+            playerBoard.path = [];
+            playerBoard.drawMode = false;
+
+            updateTimeButtonInPlayerBoard();
         }, 0.9);
     }
 
@@ -168,7 +173,11 @@ export const init = async model => {
         g2.setColor('black');
         g2.textHeight(.03);
         g2.textHeight(.05);
-        g2.fillText('Player' + i + 'Board', .5, .95, 'center');
+        if (!playerBoard.drawMode) {
+            g2.fillText('Player' + i + 'Board', .5, .95, 'center');
+        } else {
+            g2.fillText('Player' + i + 'Board' + ' (Draw Mode)', .5, .95, 'center');
+        }
         //print initial position
         let initialPos = currPlayer.startTimeList.length === 0 ? 0 : currPlayer.startTimeList[0];
         g2.fillText((currPlayer.positions[initialPos][0].toFixed(1)) + ',' + (currPlayer.positions[initialPos][1].toFixed(1)), .9, .68, 'center');
@@ -199,6 +208,8 @@ export const init = async model => {
     playerBoard.timeEnd = -1;                                          //-1 if haven't set end time;
     playerBoard.visible = false;
     playerBoard.ID = -1;
+    playerBoard.drawMode = false;
+    playerBoard.path = [];
 
     playerBoard.identity().scale(.9, .9, .0001).opacity(0);
 
@@ -227,10 +238,14 @@ export const init = async model => {
         boardBase._children = [tacticBoard, fieldMap]
         playerBoard.visible = false;
         tacticBoard.visible = true;
+        playerBoard.drawMode = false;
+        playerBoard.path = [];
     }, 0.9);
 
     g2.addWidget(playerBoard, 'button', .6, .78, '#d965bb', "ADD", () => {
         playerBoard.startEditingMovement = true
+        playerBoard.drawMode = false;
+        playerBoard.path = [];
     }, 0.6)
 
     //Add delete button to delete the last interval
@@ -239,6 +254,12 @@ export const init = async model => {
         if (currPlayer.startTimeList.length === currPlayer.endTimeList.length && currPlayer.startTimeList.length >= 0) {
             currPlayer.startTimeList.pop();
             currPlayer.endTimeList.pop();
+            // set all the positions later than the current last end pos to be same as the current last end pos.
+            let last_end = currPlayer.endTimeList[currPlayer.endTimeList.length - 1];
+            for (let i = last_end + 1; i < 24; i++) {
+                currPlayer.positions[i][0] = currPlayer.positions[last_end][0];
+                currPlayer.positions[i][1] = currPlayer.positions[last_end][1];
+            }
 
             if (currPlayer.endTimeList.length > 0) {
                 playerBoard.timeEnd = currPlayer.endTimeList[currPlayer.endTimeList.length - 1];
@@ -257,10 +278,29 @@ export const init = async model => {
     g2.addTrackpad(playerBoard, .25, .47, '#ff8080', ' ', () => {
     }, 1, playerList);
 
+    // handle the on/off of drawMode. Same logic as HudButtonHandler().
+    let drawButtonHandler = () => {
+        if (playerBoard.visible && playerList[playerBoard.ID].endTimeList.length > 0 
+            && playerList[playerBoard.ID].endTimeList.length === playerList[playerBoard.ID].startTimeList.length) {
+            if (buttonState.right[4] && buttonState.right[4].pressed && !drawButtonLock) {
+                playerBoard.drawMode = !playerBoard.drawMode;
+                drawButtonLock = true;
+            }
+
+            if (buttonState.right[4] && !buttonState.right[4].pressed) {
+                drawButtonLock = false;
+            }
+        } else {
+            drawButtonLock = false;
+        }
+    }
+
+
     model.animate(() => {
         boardBase.identity().boardHud().scale(1.3);
 
         hudButtonHandler();
+        drawButtonHandler();
 
         if (HUDIsShown) {
             if (boardBase._children.length === 0) {

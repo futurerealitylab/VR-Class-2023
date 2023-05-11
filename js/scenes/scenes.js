@@ -33,6 +33,9 @@ export default () => {
          { name: "DemoCroquet"        , path: "./demoCroquet.js"      },
          { name: "seaPrimitive"  , path: "./seaPrimitive.js"  },
          { name: "seaCroquet"  , path: "./seaCroquet.js"  },
+         { name: "seaPrimitive2"  , path: "./seaPrimitive2.js"  },
+         { name: "seaPrimitive4"  , path: "./seaPrimitive4.js"  },
+         // { name: "seaPrimitive3"  , path: "./seaPrimitive3.js"  },
       ]
    };
 }

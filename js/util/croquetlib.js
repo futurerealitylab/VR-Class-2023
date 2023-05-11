@@ -159,6 +159,7 @@ export class View extends Croquet.View {
      if(preLeftTrigger && !buttonState.left[0].pressed) {
       this.event('leftTriggerRelease', controllerMatrix.right, preLeftTrigger)
       }
+      
 
      this.publish(this.viewId, "updatePos", avatarJson);
      preRightTrigger = buttonState.right[0].pressed;

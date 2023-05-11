@@ -3,6 +3,8 @@ import * as croquet from "../util/croquetlib.js";
 import { controllerMatrix, buttonState } from "../render/core/controllerInput.js";
 import * as cg from "../render/core/cg.js";
 import { g2 } from "../util/g2.js";
+import * as global from "../global.js";
+import { Gltf2Node } from "../render/nodes/gltf2.js";
 
 // let ItemsToCollect =
 //     [
@@ -20,7 +22,9 @@ let prevPos = [0, 0, 0];
 
 // let leftTriggerPrev = false;
 // let rightTriggerPrev = false;
-let world = null;
+let worldP = null;
+let worldG = null;
+
 let target = null;
 let objsInScene = [];
 
@@ -95,7 +99,7 @@ let ifSuccess = () => {
 
 let gameEndW = null;
 let GameEnd = () => {
-    let EndWidget = world.add('cube').texture(() => {
+    let EndWidget = worldP.add('cube').texture(() => {
         g2.setColor('white');
         // g2.fillRect(.1,0,.8,1);
         g2.fillRect(.1, 0, 1, .5);
@@ -117,7 +121,6 @@ export let initModel = () => {                                // INITIALIZE THE 
             { location: [0, 1, .5], scale: .3/*[.1, .1, .1]*/ },
             { location: [-0.2, 1, .5], scale: .3/*[.1, .1, .1]*/ },
         ];
-    
 
     for (const objInfo of items) {
         window.croquetModel.scene.push({ location: objInfo.location, scale: objInfo.scale, matrix: null, inMovement: false, activated: false, color: [1, 1, 1] });
@@ -128,8 +131,11 @@ export let initModel = () => {                                // INITIALIZE THE 
 let drawObjects = () => {
     // console.log('drawObjects')
     if (objsInScene.length == 0) {
-        world = window.clay.model.add();
-        target = world.add('cube');
+        worldG = new Gltf2Node({ url: './media/gltf/underwater_planet/untitled.gltf' });
+        global.gltfRoot.addNode(worldG);
+
+        worldP = window.clay.model.add();
+        target = worldP.add('cube');
 
         for (const objInfo of window.croquetModel.scene) {
             let obj = window.clay.model.add('cube');
@@ -156,6 +162,7 @@ let drawObjects = () => {
         }
     }
     target.identity().move(targetLocation).scale(targetScale).opacity(.7);
+    worldG.translation = [0, -3,0];
 }
 
 export let drawView = () => {                          // TO DRAW MY VIEW OF THE SCENE,
@@ -206,6 +213,7 @@ export let updateModel = e => {
 export const init = async model => {
     croquet.register('croquetDemo_mydemo');
     model.setTable(false);
+    model.setRoom(false);
     model.animate(() => {
     });
 }

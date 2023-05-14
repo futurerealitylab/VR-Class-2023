@@ -17,38 +17,63 @@ let rightTriggerPrev = false;
 
 const TARGET_ID = 'ball';
 
-let currentState = "setup";
-
-let waitingMenu = null;
-let startGameMenu = null;
-
-let gameState = {
-  role: null,
-  players: null,
-  activeAlerts: null,
-}
+let hudMenu = null;
 
 export let updateModel = e => {
   
 }
 
-export let sendToScene = (event) => {
-  switch (event.eventType) {
-    case "player-joined":
-      gameState.players = {
-        captain: event.captain,
-        engineer: event.engineer,        
-      };
-      gameState.role = event.role;
-      
+export let updateView = (event) => {
+  console.log(event)
+  console.log(window)
 
-      if (event.engineer && event.captain){
-        console.log("test")
-        currentState = "allPlayersJoined";
-      }
+  switch (event.eventName) {
+    case "waitingForPlayer":
+      window.clay.model.remove(hudMenu);
 
-      console.log(gameState)
+      hudMenu = window.clay.model.add('cube').texture(() => {
+        g2.setColor('white');
+        g2.fillRect(0, 0, 1, 1);
+        g2.setColor('black');
+  
+        g2.textHeight(0.1)
+  
+        g2.fillText("For this round", .5, .8, 'center');
+        g2.fillText("Your role will be:", .5, .7, 'center');
+        g2.fillText(`${event.info.role}`, .5, .6, 'center');
+      });
       break
+    case "allPlayersJoined":
+      window.clay.model.remove(hudMenu);
+
+      hudMenu = window.clay.model.add('cube').texture(() => {
+        g2.setColor('white');
+        g2.fillRect(0, 0, 1, 1);
+        g2.setColor('black');
+      
+        if (! g2.drawWidgets(hudMenu)) {
+          return
+        }
+      });
+
+      g2.addWidget(hudMenu, 'button', 0.5, 0.1, 'grey', 'Start Game', () => { 
+        window.croquetView.startGame()
+      });
+      break
+    case "startingGame":
+        window.clay.model.remove(hudMenu);
+
+        target = window.clay.model.time + 5;
+  
+        hudMenu = window.clay.model.add('cube').texture(() => {
+          g2.setColor('white');
+          g2.fillRect(0, 0, 1, 1);
+          g2.setColor('black');
+          
+          g2.fillText("Game will start in:", .5, .8, 'center');
+          g2.fillText(`${target - window.clay.model.time}`, .5, .6, 'center');
+        });
+        break
   }
 }
 
@@ -61,11 +86,12 @@ export const init = async model => {
    * CROQUET SETUP
    * ===================
    */
+  // croquet.register("red-red-red-red");
 
   let gameCode = [null, null, null, null]
   let gameCodeIndex = 0;
 
-  let welcomeMenu = model.add('cube').texture(() => {
+  hudMenu = model.add('cube').texture(() => {
     g2.setColor('white');
     g2.fillRect(0, 0, 1, 1);
     g2.setColor('black');
@@ -90,7 +116,7 @@ export const init = async model => {
       indx ++;
     }
 
-    if (! g2.drawWidgets(welcomeMenu)) {
+    if (! g2.drawWidgets(hudMenu)) {
         return
     }
   });
@@ -101,7 +127,7 @@ export const init = async model => {
   for (const codeButttonRow of codeButtons){
     let columnIndx = 1;
     for (const codeButton of codeButttonRow){
-      g2.addWidget(welcomeMenu, 'button', (0.2 * (columnIndx)), .25 * rowIndx, codeButton, '   ', () => { 
+      g2.addWidget(hudMenu, 'button', (0.2 * (columnIndx)), .25 * rowIndx, codeButton, '   ', () => { 
         if (gameCodeIndex >= 4) {
           return
         }
@@ -113,14 +139,20 @@ export const init = async model => {
     rowIndx ++;
   }
 
-  g2.addWidget(welcomeMenu, 'button', 0.5, 0.1, 'grey', 'Join Game', () => { 
+  g2.addWidget(hudMenu, 'button', 0.25, 0.1, 'grey', 'Join Game', () => { 
     if (gameCodeIndex < 4) {
       return
     }
-    currentState = "waitingForPlayers";
+    model.remove(hudMenu);
     const croquetCode = gameCode.join('-');
     croquet.register(croquetCode);
   });
+
+  g2.addWidget(hudMenu, 'button', 0.75, 0.1, 'grey', '  Clear  ', () => { 
+    gameCode = [null, null, null, null];
+    gameCodeIndex = 0;
+  });
+
 
   /**
    * ===================
@@ -305,58 +337,11 @@ export const init = async model => {
   // croquet.register("green-green-green-green");
 
   model.animate(() => {
-
-    switch (currentState){
-      case "setup":
-        welcomeMenu.hud().scale(1, 1, .0001)
-        break
-      case "waitingForPlayers": 
-        if (welcomeMenu != null){
-          model.remove(welcomeMenu);
-
-          waitingMenu = model.add('cube').texture(() => {
-            g2.setColor('white');
-            g2.fillRect(0, 0, 1, 1);
-            g2.setColor('black');
-      
-            g2.textHeight(0.1)
-      
-            g2.fillText("For this round will be:", .5, .8, 'center');
-            g2.fillText("Your role will be:", .5, .7, 'center');
-            g2.fillText(`${gameState.role} ${currentState}`, .5, .6, 'center');
-          });
-          welcomeMenu = null;
-        }
-        waitingMenu.hud().scale(1, 1, .0001)
-        break
-      case "allPlayersJoined":
-        if (waitingMenu != null){
-          model.remove(waitingMenu);
-          startGameMenu =  model.add('cube').texture(() => {
-            g2.setColor('white');
-            g2.fillRect(0, 0, 1, 1);
-            g2.setColor('black');
-          
-            if (! g2.drawWidgets(startGameMenu)) {
-              return
-            }
-          });
-          g2.addWidget(startGameMenu, 'button', 0.5, 0.1, 'grey', 'Start Game', () => { 
-            currentState = "game";
-          });
-          waitingMenu = null;
-        }
-        startGameMenu.hud().scale(1, 1, .0001)
-        break
-      case "game":
-        if (startGameMenu != null){
-          model.remove(startGameMenu);
-          startGameMenu = null;
-        }
-        break
-    }
     
-
+    if (hudMenu != null){
+      hudMenu.hud().scale(1, 1, .0001)
+    }
+   
     /**
      * ===================
      * TASK 1 CODE

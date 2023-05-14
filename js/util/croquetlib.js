@@ -1,7 +1,7 @@
 
 // YOUR APPLICATION SHOULD REDEFINE THESE FUNCTIONS:
 
-import { updateModel, sendToScene } from "../scenes/spaceShipTasks.js";
+import { updateModel, updateView } from "../scenes/spaceShipTasks.js";
 import { controllerMatrix,  buttonState, joyStickState} from "../render/core/controllerInput.js";
 import { initAvatar } from "../primitive/avatar.js";
 import * as global from "../global.js";
@@ -150,6 +150,7 @@ export class View extends Croquet.View {
       this.pawns = new Map();
       croquetModel.actors.forEach(actor => this.addPawn(actor));
 
+      window.croquetView = this;
       this.role = "Captain";
       this.failedTimeout = null;
       this.playersUpdated(croquetModel.players)
@@ -170,9 +171,7 @@ export class View extends Croquet.View {
       }
       onmousedown = e => { this.mouseDown(eToXY(e)); }
       onmouseup   = e => { this.mouseUp  (eToXY(e)); }
-      onmousemove = e => { this.mouseMove(eToXY(e));
-         // this.publish(this.viewId, "updatePos", eToXY(e));
-      }
+      onmousemove = e => { this.mouseMove(eToXY(e)); }
    }
 
    init(options) {
@@ -266,6 +265,10 @@ export class View extends Croquet.View {
   failAlert() {
     this.publish("input", 'game-event', { eventType: "failed-alert" });
   }
+
+  startGame() {
+    this.publish("input", 'game-event', { eventType: "starting-game" });
+  }
   
   processGameEvent(event) {
     console.log("new event", event)
@@ -274,48 +277,54 @@ export class View extends Croquet.View {
     switch (eventType){
       case "starting-game":
         this.gameStarted = true;
-        if (this.model.players.engineer === this.viewId){
-          this.role = "Engineer";
-        } else {
+        
+        if (this.model.players.captain === this.viewId){
           setTimeout(() => this.createNewAlert(), this.randomInt(5000, 30000));
         }
-        gameStatusDiv.textContent = `Game is starting... you are playing as ${this.role}`;
-        this.buttonAction = "none";
+
+        updateView({
+            who: this.viewId,
+            eventName: "startingGame",
+            info: {
+               role: players.engineer === this.viewId ? "engineer" : "captain"
+            }
+         })
         break
       case "reset-game":
         this.gameStarted = false;
       case "new-alert":
-        gameStatusDiv.textContent = `Alert Alert....Severity ${event.severity} Alert...fix the ${event.alertName}....`;
-        
-        if (event.resolvedBy === this.viewId){
-          document.getElementById("eventButtonDiv").style.display = "block";
-          eventButton.value = "Resolve Alert";
-          this.buttonAction = "resolve-alert";
-        }
         break
       case "resolved-alert":
-        gameStatusDiv.textContent = `Alert has been resolved... hurray...`;
         if (this.model.players.captain === this.viewId){
           setTimeout(() => this.createNewAlert(), this.randomInt(5000, 30000));
         }
         clearTimeout(this.failedTimeout);
         break
       case "failed-alert":
-        gameStatusDiv.textContent = "Game Over...";
+         break
       default:
         break
     }
   }
 
   playersUpdated(players) {
-
-   let event = {
-      eventType: "player-joined",
-      role: players.engineer === this.viewId ? "engineer" : "captain",
-      ...players
+   if (players.engineer && players.captain){
+      updateView({
+         who: this.viewId,
+         eventName: "allPlayersJoined",
+         info: {
+            role: players.engineer === this.viewId ? "engineer" : "captain"
+         }
+      })
+   } else {
+      updateView({
+         who: this.viewId,
+         eventName: "waitingForPlayer",
+         info: {
+            role: players.engineer === this.viewId ? "engineer" : "captain"
+         }
+      })
    }
-
-   sendToScene(event);
  }
 }
 

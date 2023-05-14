@@ -1,7 +1,7 @@
 
 // YOUR APPLICATION SHOULD REDEFINE THESE FUNCTIONS:
 
-import { updateModel } from "../scenes/demoCroquet.js";
+import { updateModel, sendToScene } from "../scenes/spaceShipTasks.js";
 import { controllerMatrix,  buttonState, joyStickState} from "../render/core/controllerInput.js";
 import { initAvatar } from "../primitive/avatar.js";
 import * as global from "../global.js";
@@ -35,12 +35,20 @@ let drawView    = () => {
 
 export class Model extends Croquet.Model {
    init() {
+
+      this.players = {
+         captain: null,
+         engineer: null
+      };      
       this.actors = new Map();
       this.actorStates = new Map();
       this.subscribe(this.sessionId, "view-join", this.viewJoin);
       this.subscribe(this.sessionId, "view-exit", this.viewDrop);
+
       this.subscribe("scene", "initScene"   , this.initScene   );
       this.subscribe("scene", "updateScene" , this.updateScene );
+      this.subscribe("input", "game-event", this.processGameEvent);
+
       this.actorIndex = 0;
       this.initScene();
    }
@@ -54,12 +62,40 @@ export class Model extends Croquet.Model {
       actor.state = actorState;
       this.actors.set(viewId, actor);
       this.publish("actor", "join", actor);
+
+      if (this.players.captain && this.players.engineer) {
+         console.log(`All roles taken. Cannot add ${viewId}.`)
+         return false;
+      } else if (!this.players.captain) {
+         this.players.captain = viewId;
+         console.log(`Added player ${viewId} as Captain.`);
+      } else if (!this.players.engineer) {
+         this.players.engineer = viewId;
+         console.log(`Added player ${viewId} as Engineer.`);
+      }
+      this.publish(this.sessionId, 'players-updated', this.players)
    }
    viewDrop(viewId) {
       const actor = this.actors.get(viewId);
       this.actors.delete(viewId);
       actor.destroy();
       this.publish("actor", "exit", actor);
+
+      if (this.players.captain === viewId) {
+         this.players.captain = null
+         console.log(`Removed player ${viewId} from Captain.`);
+       } else if (this.players.engineer === viewId) {
+         this.players.engineer = null
+         console.log(`Removed player ${viewId} from Engineer.`);
+       } else {
+         console.log(`Removed player ${viewId} had no role.`);
+         return false;
+       }
+   
+       this.publish(this.sessionId, 'players-updated', this.players)
+       this.publish(this.sessionId, 'game-event', {
+         eventType: "reset-game"
+       })
    }
    initScene() {
       window.croquetModel = this;
@@ -72,6 +108,10 @@ export class Model extends Croquet.Model {
          window.croquetModel = this;
          initModel();
       }
+   }
+
+   processGameEvent(event) {
+      this.publish(this.sessionId, "game-event", event);
    }
 }
 
@@ -110,6 +150,13 @@ export class View extends Croquet.View {
       this.pawns = new Map();
       croquetModel.actors.forEach(actor => this.addPawn(actor));
 
+      this.role = "Captain";
+      this.failedTimeout = null;
+      this.playersUpdated(croquetModel.players)
+
+      this.subscribe(this.sessionId, 'players-updated', this.playersUpdated);
+      this.subscribe(this.sessionId, 'game-event', this.processGameEvent);
+
       this.subscribe("actor", "join", this.addPawn);
       this.subscribe("actor", "exit", this.removePawn);
       this.future(50).tick();
@@ -126,6 +173,10 @@ export class View extends Croquet.View {
       onmousemove = e => { this.mouseMove(eToXY(e));
          // this.publish(this.viewId, "updatePos", eToXY(e));
       }
+   }
+
+   init(options) {
+
    }
 
    tick() {    
@@ -199,6 +250,73 @@ export class View extends Croquet.View {
    mouseDown(p) { this.isDown = true ; this.event('press', p); }
    mouseMove(p) { this.event(this.isDown ? 'drag' : 'move', p); }
    mouseUp(p)   { this.isDown = false; this.event('release', p, this.color); }
+
+   createNewAlert() {
+      const expiration = this.randomInt(10000, 30000);
+      this.failedTimeout = setTimeout(() => this.failAlert(), expiration);
+      this.publish("input", 'game-event', {
+        eventType: "new-alert",
+        expiration: expiration,
+        alertName: this.randomAlertName(),
+        severity: this.randomInt(1, 5),
+        resolvedBy: [this.model.players.engineer, this.model.players.captain][this.randomInt(0, 2)]
+      })
+  }
+  
+  failAlert() {
+    this.publish("input", 'game-event', { eventType: "failed-alert" });
+  }
+  
+  processGameEvent(event) {
+    console.log("new event", event)
+                
+    const eventType = event.eventType;
+    switch (eventType){
+      case "starting-game":
+        this.gameStarted = true;
+        if (this.model.players.engineer === this.viewId){
+          this.role = "Engineer";
+        } else {
+          setTimeout(() => this.createNewAlert(), this.randomInt(5000, 30000));
+        }
+        gameStatusDiv.textContent = `Game is starting... you are playing as ${this.role}`;
+        this.buttonAction = "none";
+        break
+      case "reset-game":
+        this.gameStarted = false;
+      case "new-alert":
+        gameStatusDiv.textContent = `Alert Alert....Severity ${event.severity} Alert...fix the ${event.alertName}....`;
+        
+        if (event.resolvedBy === this.viewId){
+          document.getElementById("eventButtonDiv").style.display = "block";
+          eventButton.value = "Resolve Alert";
+          this.buttonAction = "resolve-alert";
+        }
+        break
+      case "resolved-alert":
+        gameStatusDiv.textContent = `Alert has been resolved... hurray...`;
+        if (this.model.players.captain === this.viewId){
+          setTimeout(() => this.createNewAlert(), this.randomInt(5000, 30000));
+        }
+        clearTimeout(this.failedTimeout);
+        break
+      case "failed-alert":
+        gameStatusDiv.textContent = "Game Over...";
+      default:
+        break
+    }
+  }
+
+  playersUpdated(players) {
+
+   let event = {
+      eventType: "player-joined",
+      role: players.engineer === this.viewId ? "engineer" : "captain",
+      ...players
+   }
+
+   sendToScene(event);
+ }
 }
 
 export class Pawn extends Croquet.View {
@@ -216,8 +334,8 @@ export class Pawn extends Croquet.View {
 export let register = name => {
    Model.register("RootModel");
    Croquet.Session.join({
-      apiKey  : apiKey,
-      appId   : 'edu.nyu.frl.' + name,
+      apiKey  : "1_9oolgb5b5wc5kju39lx8brrrhm82log9xvdn34uq",
+      appId   : 'io.codepen.croquet.hello',
       name    : name,
       password: 'secret',
       model   : Model,

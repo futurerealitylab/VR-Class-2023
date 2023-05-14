@@ -33,6 +33,7 @@ export default () => {
          // { name: "DemoCroquet"        , path: "./demoCroquet.js"      },
          { name: "EngineeringRoom"        , path: "./SpaceShip.js"      },
          { name: "SampleTasks"        , path: "./spaceShipTasks.js"      },
+         { name: "debug"              , path: "./debug.js"      },
       ]
    };
 }

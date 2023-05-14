@@ -292,15 +292,41 @@ export class View extends Croquet.View {
         break
       case "reset-game":
         this.gameStarted = false;
+        updateView({
+            who: this.viewId,
+            eventName: "waitingForPlayer",
+            info: {
+               role: players.engineer === this.viewId ? "engineer" : "captain"
+            }
+         })
       case "new-alert":
+         updateView({
+            who: this.viewId,
+            eventName: "newAlert",
+            info: {
+               severity: event.severity,
+               name: event.alertName,
+               resolvableBy: event.resolvedBy
+            }
+         })
         break
       case "resolved-alert":
         if (this.model.players.captain === this.viewId){
           setTimeout(() => this.createNewAlert(), this.randomInt(5000, 30000));
         }
         clearTimeout(this.failedTimeout);
+        updateView({
+            who: this.viewId,
+            eventName: "resolvedAlert",
+            info: {}
+         })
         break
       case "failed-alert":
+         updateView({
+            who: this.viewId,
+            eventName: "gameOver",
+            info: {}
+         })
          break
       default:
         break

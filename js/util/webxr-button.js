@@ -324,9 +324,9 @@ export class WebXRButton {
     options.cssprefix = options.cssprefix || "webvr-ui";
 
     // This reads VR as none of the samples are designed for other formats as of yet.
-    options.textEnterXRTitle = options.textEnterXRTitle || "ENTER VR";
-    options.textXRNotFoundTitle = options.textXRNotFoundTitle || "VR NOT FOUND";
-    options.textExitXRTitle = options.textExitXRTitle || "EXIT VR";
+    options.textEnterXRTitle = options.textEnterXRTitle || "ENTER AR";
+    options.textXRNotFoundTitle = options.textXRNotFoundTitle || "AR NOT FOUND";
+    options.textExitXRTitle = options.textExitXRTitle || "EXIT AR";
 
     options.onRequestSession = options.onRequestSession || function () { };
     options.onEndSession = options.onEndSession || function () { };

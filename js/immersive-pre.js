@@ -243,7 +243,7 @@ export function initXR() {
 
             navigator.xr.requestSession("inline").then(onSessionStarted);
         }).catch((err) => {
-            handTrackerInit();
+            //handTrackerInit();
             navigator.xr.requestSession("inline").then(onSessionStarted);
             console.warn("immersive-ar not supported on this platform!");
         });

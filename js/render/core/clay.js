@@ -1798,7 +1798,7 @@ let onKeyUp = event => {
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 let S = [], vm, vmi, computeQuadric, activeSet, implicitSurface,
-    rotatex, rotatey, rotatexState, rotateyState, modelMatrix, isTable = true, isRoom = false;
+    rotatex, rotatey, rotatexState, rotateyState, modelMatrix, isTable = false, isRoom = false;
 let frameCount = 0;
 let fl = 5;                                                          // CAMERA FOCAL LENGTH
 {

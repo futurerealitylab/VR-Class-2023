@@ -1022,9 +1022,9 @@ let cylinderZMesh = glueMeshes(glueMeshes(tubeMesh, createMesh(32, 2, uvToDisk, 
 let cylinderXMesh = permuteCoords(cylinderZMesh);
 let cylinderYMesh = permuteCoords(cylinderXMesh);
 
-this.wire = (nu,nv) => {
+this.wire = (nu,nv,id) => {
    nv = cg.def(nv, 6);
-   let type = 'wire,' + nu + ',' + nv;
+   let type = 'wire,' + nu + ',' + nv + ',' + id;
    clay.defineMesh(type, clay.createGrid(nu, nv));
    return type;
 }

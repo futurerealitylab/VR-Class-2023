@@ -109,3 +109,42 @@ export function ControllerBeam(model, hand) {
                                 cg.mScale(label.getInfo().length/2,1,1)));
 }
 
+let wasL0Down = false, isL0Down;
+let wasL1Down = false, isL1Down;
+let wasR0Down = false, isR0Down;
+let wasR1Down = false, isR1Down;
+
+export let controllerEventType = () => {
+   let what = null;
+
+   if (isL0Down = buttonState.left[0].pressed)
+      what = ! wasL0Down ? 'leftTriggerPress' : 'leftTriggerDrag';
+   else if (wasL0Down)
+      what = 'leftTriggerRelease';
+   wasL0Down = isL0Down;
+   if (what) return what;
+
+   if (isR0Down = buttonState.right[0].pressed)
+      what = ! wasR0Down ? 'rightTriggerPress' : 'rightTriggerDrag';
+   else if (wasR0Down)
+      what = 'rightTriggerRelease';
+   wasR0Down = isR0Down;
+   if (what) return what;
+
+   if (isL1Down = buttonState.left[1].pressed)
+      what = ! wasL1Down ? 'leftThumbPress' : 'leftThumbDrag';
+   else if (wasL1Down)
+      what = 'leftThumbRelease';
+   wasL1Down = isL1Down;
+   if (what) return what;
+
+   if (isR1Down = buttonState.right[1].pressed)
+      what = ! wasR1Down ? 'rightThumbPress' : 'rightThumbDrag';
+   else if (wasR1Down)
+      what = 'rightThumbRelease';
+   wasR1Down = isR1Down;
+   if (what) return what;
+
+   return null;
+}
+

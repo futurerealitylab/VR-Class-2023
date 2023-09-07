@@ -9,7 +9,12 @@ import * as global from "../global.js";
 // YOU SHOULD OBTAIN YOUR OWN apiKey FROM: croquet.io/keys
 
 let apiKey = '16JKtOOpBuJsmaqgLzMCFyLPg9mqtNhxtObIsoj4b';
+
+let preLeftTrigger  = {pressed: false, touched: false, value: 0};
 let preRightTrigger = {pressed: false, touched: false, value: 0};
+let preLeftThumb    = {pressed: false, touched: false, value: 0};
+let preRightThumb   = {pressed: false, touched: false, value: 0};
+
 window.color = [Math.random(), Math.random(), Math.random()]
 /////////////////////////////////////////////////////////////////
 let initModel = () => {
@@ -140,11 +145,45 @@ export class View extends Croquet.View {
          "joyStickState": joyStickState,
          "VR": window.vr,
       }
-      if(preRightTrigger && !buttonState.right[0].pressed) {
-      this.event('rightTriggerRelease', controllerMatrix.right, this.color)
-      }
+
+      if (buttonState.left[0].pressed)
+         if (! preLeftTrigger)
+            this.event('leftTriggerPress', controllerMatrix.left, this.color)
+	 else
+            this.event('leftTriggerDrag', controllerMatrix.left, this.color)
+      else if (preLeftTrigger)
+         this.event('leftTriggerRelease', controllerMatrix.left, this.color)
+
+      if (buttonState.right[0].pressed)
+         if (! preRightTrigger)
+            this.event('rightTriggerPress', controllerMatrix.right, this.color)
+	 else
+            this.event('rightTriggerDrag', controllerMatrix.right, this.color)
+      else if (preRightTrigger)
+         this.event('rightTriggerRelease', controllerMatrix.right, this.color)
+
+      if (buttonState.left[1].pressed)
+         if (! preLeftThumb)
+            this.event('leftThumbPress', controllerMatrix.left, this.color)
+	 else
+            this.event('leftThumbDrag', controllerMatrix.left, this.color)
+      else if (preLeftThumb)
+         this.event('leftThumbRelease', controllerMatrix.left, this.color)
+
+      if (buttonState.right[1].pressed)
+         if (! preRightThumb)
+            this.event('rightThumbPress', controllerMatrix.right, this.color)
+	 else
+            this.event('rightThumbDrag', controllerMatrix.right, this.color)
+      else if (preRightThumb)
+         this.event('rightThumbRelease', controllerMatrix.right, this.color)
+
       this.publish(this.viewId, "updatePos", avatarJson);
+
+      preLeftTrigger  = buttonState.left [0].pressed;
       preRightTrigger = buttonState.right[0].pressed;
+      preLeftThumb    = buttonState.left [1].pressed;
+      preRightThumb   = buttonState.right[1].pressed;
 
       window.view = this;
       drawView();

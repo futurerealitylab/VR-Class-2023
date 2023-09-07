@@ -31,6 +31,13 @@
       return mixf(a, b, t);
    }
 
+   // Cubic ease curve
+
+   export let ease = t => {
+      t = Math.max(0, Math.min(1, t));
+      return t * t * (3 - t - t);
+   }
+
    // Linear mix in one dimension
 
    export let mixf = (a,b,t,u) => a * (u===undefined ? 1-t : t) + b * (u===undefined ? t : u);
@@ -78,9 +85,9 @@
 
    // Create a spline, given key points and number of samples per key.
 
-   export let makeSpline = (keys, dst, ptsPerKey) => {
+   export let spline = (keys, dst, ptsPerKey) => {
       let spline = dst;
-      if (spline === undefined)
+      if (spline === null || spline === undefined)
          spline = [];
 
       let N = def(ptsPerKey, 10);

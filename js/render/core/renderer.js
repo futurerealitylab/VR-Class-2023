@@ -231,12 +231,13 @@ in vec2  aUV;
 in float aRGB;
 
 out   vec4  vDiffuse, vSpecular;
-out   vec3  vAPos, vPos, vNor, vRGB;
+out   vec3  vAPos, vPos, vNor, vTan, vRGB;
 out   vec2  vUV;
 out   float vWeights[6];
 
 out vec3 worldPosition;
 out vec3 worldNormal;
+out vec3 worldTangent;
 
 float noise(vec3 point) { 
   float r = 0.; for (int i=0;i<16;i++) {
@@ -274,7 +275,10 @@ float noise(vec3 point) {
       vec3 aNor = unpack0(aRot);
       vec4 nor = vec4(aNor, 0.);
 
-      vec3 P = aPos, N = aNor;
+      vec3 aTan = unpack1(aRot);
+      vec4 tan = vec4(aTan, 0.);
+
+      vec3 P = aPos, N = aNor, T = aTan;
 
       // IF THIS IS A BLOBBY OBJECT
       // BLEND WEIGHTED POSITIONS, NORMALS AND COLORS FROM COMPONENT OBJECTS
@@ -302,13 +306,16 @@ float noise(vec3 point) {
       // pos.z += 1. / uProj[2].w;
       pos = uProj * pos;
 
-      //nor = vec4(N, 0.) * uInvModel;
       vec3 norV3 = mat3(transpose(uInvModel)) * N;
       worldNormal = norV3;
+
+      vec3 tanV3 = mat3(transpose(uInvModel)) * T;
+      worldTangent = tanV3;
 
       vAPos = aPos;
       vPos = pos.xyz;
       vNor = norV3;
+      vTan = tanV3;
       vRGB = unpackRGB(aRGB);
       vUV  = aUV;
 
@@ -358,9 +365,9 @@ precision highp float; // HIGH PRECISION FLOATS
  uniform float uBlobby;              // BLOBBY FLAG
  uniform float uOpacity;
  
- uniform vec3  uLDir[nl], uLCol[nl];          // DIRECTIONAL LIGHTING
- uniform vec3  uLPoint[nlPts], uLPointCol[nlPts]; // POINT LIGHTING
- uniform int uDLightCount, uPLightCount;
+ uniform vec3 uLDir[nl], uLCol[nl];              // DIRECTIONAL LIGHTING
+ uniform vec3 uLPoint[nlPts], uLPointCol[nlPts]; // POINT LIGHTING
+ uniform int  uDLightCount, uPLightCount;
 
  uniform mat4  uPhong;               // MATERIAL
  uniform mat4  uProj, uView;         // PROJECTION AND VIEW
@@ -377,13 +384,14 @@ precision highp float; // HIGH PRECISION FLOATS
  uniform int uWhitescreen;
  uniform vec3 uViewPosition;
 
- in vec3  vAPos, vPos, vNor, vRGB;   // POSITION, NORMAL, COLOR
- in float vWeights[6];               // BLOBBY WEIGHTS
+ in vec3  vAPos, vPos, vNor, vTan, vRGB;   // POSITION, NORMAL, TANGENT, COLOR
+ in float vWeights[6];                     // BLOBBY WEIGHTS
  in vec4  vDiffuse, vSpecular;
  in vec2  vUV;
 
  in vec3 worldPosition;
  in vec3 worldNormal;
+ in vec3 worldTangent;
 
  out vec4 fragColor; // RESULT WILL GO HERE
 
@@ -480,6 +488,7 @@ vec3 lighting_contribution(
     float specularPower = specular.a;
 
     vec3 normal = normalize(worldNormal);
+    vec3 tangent = normalize(worldTangent);
     vec3 eye = normalize(uViewPosition - worldPosition);
 
     // directional lights

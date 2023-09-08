@@ -278,7 +278,7 @@ export class InputRenderer extends Node {
     controller.activeCount = (controller.activeCount + 1) % this._maxInputElements;
 
     controllerNode.matrix = gripMatrix;
-    controllerNode.visible = true;
+    controllerNode.visible = false;
   }
 
   addLaserPointer(rigidTransform) {

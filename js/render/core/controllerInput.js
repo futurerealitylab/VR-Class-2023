@@ -38,7 +38,7 @@ export let updateController = (avatar, buttonInfo) => {
 
     for (let i = 0; i < buttonNum; i++) {
       // Update
-      buttonState[h][i] = {pressed: b[i].pressed, touched: b[i].touched, value: b[i].value};
+      buttonState[h][i] = b[i];
       joyStickState[h] = {x: a[2], y: a[3]};
     }
   }

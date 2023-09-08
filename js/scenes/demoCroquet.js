@@ -7,7 +7,7 @@ export let updateModel = e => {
 }
 
 export const init = async model => {
-   croquet.register('croquetDemo_1.0');
+   // croquet.register('croquetDemo_1.0');
    model.animate(() => {
    });
 }

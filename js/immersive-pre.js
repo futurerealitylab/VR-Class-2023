@@ -770,7 +770,7 @@ function onXRFrame(t, frame) {
 
     updateAvatars();
 
-    updateObjects();
+    // updateObjects();
 
     // ZH: save previous "source.gamepad.buttons" for two controllers,
     // check if changes per frame
@@ -811,16 +811,18 @@ function updateAvatars() {
     // update avatar's model's matrix
     for (let id in window.avatars) {
         let avatar = window.avatars[id];
-        if (id == window.playerid || (window.view && id == window.view.viewId)) avatar.headset.model.visible = false;
-        if(window.view && id == window.view.viewId) {
-            avatar.leftController.model.visible = false;
-            avatar.rightController.model.visible = false;
-        }
-        // if (
-        //     avatar.headset.position.x ||
-        //     avatar.headset.position.y ||
-        //     avatar.headset.position.z
-        // )
+        // avatar.leftController.model.visible = false;
+        // avatar.rightController.model.visible = false;
+        // if (id == window.playerid || (window.view && id == window.view.viewId)) avatar.headset.model.visible = false;
+        // if(window.view && id == window.view.viewId) {
+        //     avatar.leftController.model.visible = false;
+        //     avatar.rightController.model.visible = false;
+        // }
+        if (
+            avatar.headset.position.x ||
+            avatar.headset.position.y ||
+            avatar.headset.position.z
+        )
          {
             
             // not in the default pos

@@ -79,8 +79,8 @@ export class Avatar {
       this.rightController.orientation = payload["state"]["controllers"]["right"]["rot"];
       this.rightController.fromJson(payload["state"]["controllers"]["right"]["btn"]);
       this.headset.model.visible = true;
-      this.leftController.model.visible = true;
-      this.rightController.model.visible = true;
+      this.leftController.model.visible = false;
+      this.rightController.model.visible = false;
       this.name = payload["state"]["name"];
       this.nameTagColor = payload["state"]["color"];
       this.device = payload["state"]["device"];
@@ -133,7 +133,7 @@ export class Controller {
     this.matrix = mat4.fromValues(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
     this.model.scale = vec3.fromValues(1, 1, 1);
     this.model.name = "ctrl";
-    this.model.visible = true;
+    this.model.visible = false;
 
     this.updateButtons = function (src, newBtns) {
       // send corelink msg if changed

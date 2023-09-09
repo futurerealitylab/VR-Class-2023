@@ -1,0 +1,2 @@
+killall -q node
+node server/main.js &

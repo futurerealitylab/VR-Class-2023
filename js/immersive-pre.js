@@ -62,7 +62,7 @@ import { scenesSetup } from "/js/handle_scenes.js";
 // XR globals.
 let xrButton = null;
 let xrImmersiveRefSpace = null;
-let inlineViewerHelper = null;
+export let inlineViewerHelper = null;
 let inputController = null;
 let time = 0;
 

@@ -1401,11 +1401,11 @@ export class Renderer {
        let updateCB = cb => {
           let m;
           if (window.handtracking)
-       m = clay.handsWidget.matrix[cb.hand];
+             m = clay.handsWidget.matrix[cb.hand];
           cb.update(m);
           cb.down = m ? clay.handsWidget.pinch[cb.hand]
-                     || clay.handsWidget.bend[cb.hand] > 1
-                : buttonState[cb.hand][0].pressed;
+                        || clay.handsWidget.bend[cb.hand] > 1
+                      : buttonState[cb.hand][0].pressed;
           cb.click = cb.downPrev && ! cb.down;
           cb.downPrev = cb.down;
        }
@@ -1416,10 +1416,10 @@ export class Renderer {
           if (obj.getInfo()) {
              let lHit = lcb.hitLabel(obj);
              let rHit = rcb.hitLabel(obj);
-       obj.color(lHit && lcb.down || rHit && rcb.down ? [1,0,0] :
-                 lHit || rHit ? [1,.5,.5] : [1,1,1]);
+             obj.color(lHit && lcb.down || rHit && rcb.down ? [1,0,0] :
+                       lHit || rHit ? [1,.5,.5] : [1,1,1]);
              if ((lHit || rHit) && (lcb.click || rcb.click))
-          window.chooseFlag(obj.getInfo());
+                window.chooseFlag(obj.getInfo());
           }
        }
     }

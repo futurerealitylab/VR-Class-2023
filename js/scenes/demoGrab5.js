@@ -22,25 +22,41 @@ for (let i = 0 ; i < ballColor.length ; i++) {
 
 export const init = async model => {
 
+   let wasPinch = { left: false, right: false };
+
    let index = { left: -1, right: -1 };
+
    for (let i = 0 ; i < balls.length ; i++)
       model.add('sphere').color(ballColor[i]);
+
+   let frameCount = 0;
 
    model.animate(() => {
 
       balls = server.synchronize('balls');
 
-      let pos = {};
-      for (let hand in index)
-         pos[hand] = cg.mMultiply(controllerMatrix[hand], cg.mInverse(model.getMatrix())).slice(12, 15);
+      // WHEN STARTING, IF THIS IS THE ONLY CLIENT, THEN FORCE ALL BALLS TO NOT BE BUSY.
+
+      if (++frameCount == 30 && window.clients.length == 1)
+         for (let i = 0 ; i < balls.length ; i++)
+            balls[i].busy = false;
 
       let press = hand => {
+         if (index[hand] >= 0)
+	    release(hand);
+         let dMin = 10000, iMin = -1;
 	 for (let i = 0 ; i < model.nChildren() ; i++)
-	    if (! balls[i].busy && cg.distance(pos[hand], balls[i].pos) <= 2 * radius) {
-	       index[hand] = i;
-	       balls[i].busy = true;
-	       break;
+	    if (! balls[i].busy) {
+	       let d = cg.distance(pos[hand], balls[i].pos);
+	       if (d < dMin) {
+	          dMin = d;
+		  iMin = i;
+               }
             }
+	 if (dMin < 2 * radius) {
+	    index[hand] = iMin;
+	    balls[iMin].busy = true;
+         }
       }
 
       let release = hand => {
@@ -50,6 +66,18 @@ export const init = async model => {
 	    balls[i].busy = false;
             server.broadcastGlobalSlice('balls', i, i+1);
          }
+      }
+
+      let pos = {};
+      for (let hand in index)
+         pos[hand] = cg.mMultiply(controllerMatrix[hand], cg.mInverse(model.getMatrix())).slice(12, 15);
+
+      for (let hand in index) {
+         let isPinch = clay.handsWidget.pinch[hand] == 1;
+	 if (isPinch) pos[hand] = clay.handsWidget.getMatrix(hand, 1, 4).slice(12,15);
+	 if (isPinch && ! wasPinch[hand]) press(hand);
+	 if (wasPinch[hand] && ! isPinch) release(hand);
+         wasPinch[hand] = isPinch;
       }
 
       let eventTypes = controllerEventTypes();
@@ -68,8 +96,8 @@ export const init = async model => {
             server.broadcastGlobalSlice('balls', i, i+1);
          }
 
-      for (let i = 0 ; i < model.nChildren() ; i++)
-         model.child(i).identity().move(balls[i].pos).scale(radius);
+      for (let i = 0 ; i < balls.length ; i++)
+         model.child(i).identity().move(balls[i].pos).scale(radius * (balls[i].busy ? .7 : 1));
    });
 }
 

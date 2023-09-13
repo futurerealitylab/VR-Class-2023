@@ -31,7 +31,8 @@ export function HandsWidget(widgets) {
     }
 
     this.update = () => {
-        let th = [.0115,.01,.01,.01,.0085];
+        //let th = [.0115,.01,.01,.01,.0085];
+        let th = [.01,.0085,.0085,.0085,.007];
         if(window.handtracking) {
             hands.identity();
             for (let finger = 0 ; finger < 5 ; finger++) {
@@ -46,11 +47,11 @@ export function HandsWidget(widgets) {
                }
                for (let i = 1 ; i < 5 ; i++) {
                   let nj = 5 * finger + i;
-                  L_joints.child(nj).setMatrix(jointMatrix.left [nj].mat).scale(th[finger]).color(leftColor);
-                  R_joints.child(nj).setMatrix(jointMatrix.right[nj].mat).scale(th[finger]).color(rightColor);
+                  L_joints.child(nj).setMatrix(jointMatrix.left [nj].mat).scale(th[finger]).color(leftColor).dull(1).opacity(.7);
+                  R_joints.child(nj).setMatrix(jointMatrix.right[nj].mat).scale(th[finger]).color(rightColor).dull(1).opacity(.7);
                   if (finger == 0 && i == 2 || i == 1) {
-                     L_joints.child(nj).scale(1,1,.001).color(0);
-                     R_joints.child(nj).scale(1,1,.001).color(0);
+                     L_joints.child(nj).scale(1,1,.001).color(0).dull(1).opacity(.7);
+                     R_joints.child(nj).scale(1,1,.001).color(0).dull(1).opacity(.7);
                   }
                   if (finger == 0 && i == 1) {
                      L_joints.child(nj).scale(0);
@@ -60,8 +61,8 @@ export function HandsWidget(widgets) {
                for (let i = 1 ; i < 4 ; i++) {
                   let nj = 5 * finger + i;
                   let nl = 4 * finger + i;
-                  L_links.child(nl).color(leftColor);
-                  R_links.child(nl).color(rightColor);
+                  L_links.child(nl).color(leftColor).dull(1).opacity(.7);
+                  R_links.child(nl).color(rightColor).dull(1).opacity(.7);
                   aim(L_links.child(nl), jointMatrix.left [nj].mat, jointMatrix.left [nj+1].mat);
                   aim(R_links.child(nl), jointMatrix.right[nj].mat, jointMatrix.right[nj+1].mat);
                   if (finger == 0 && i == 1) L_links.child(nl).scale(0);
@@ -76,20 +77,34 @@ export function HandsWidget(widgets) {
 	    let touchColor = [ 0, [1,0,0], [1,1,0], [0,1,0], [0,0,1] ];
 	    let touchState = joints => {
 	       let a = joints.child(4).getMatrix().slice(12,15);
-	       for (let finger = 1 ; finger < 5 ; finger++) {
-	          let b = joints.child(5*finger + 4).getMatrix().slice(12,15);
-		  let d = cg.mix(a,b,-.5,.5);
-		  if (cg.norm(d) < (finger == 4 ? .01 : .006))
-		     return finger;
-	       }
+	       if (a[0]!=0 || a[1]!=0 || a[2]!=0)
+	          for (let finger = 1 ; finger < 5 ; finger++) {
+	             let b = joints.child(5*finger + 4).getMatrix().slice(12,15);
+		     let d = cg.mix(a,b,-.5,.5);
+		     if (cg.norm(d) < (finger == 4 ? .01 : .006))
+		        return finger;
+	          }
 	       return 0;
 	    }
 	    this.matrix.left  = jointMatrix.left [0].mat;
 	    this.matrix.right = jointMatrix.right[0].mat;
-            L_joints.child(0).setMatrix(this.matrix.left ).move( .005,0,-.045).scale(.03,.015,.03);
-            R_joints.child(0).setMatrix(this.matrix.right).move(-.005,0,-.045).scale(.03,.015,.03);
+
+let L_p = this.matrix.left .slice(12,15);
+let R_p = this.matrix.right.slice(12,15);
+L_joints.identity().move(L_p).scale(1.1).move(cg.scale(L_p,-1));
+L_links .identity().move(L_p).scale(1.1).move(cg.scale(L_p,-1));
+R_joints.identity().move(R_p).scale(1.1).move(cg.scale(R_p,-1));
+R_links .identity().move(R_p).scale(1.1).move(cg.scale(R_p,-1));
+
+            //L_joints.child(0).setMatrix(this.matrix.left ).move( .005,0,-.045).scale(.03,.015,.03);
+            //R_joints.child(0).setMatrix(this.matrix.right).move(-.005,0,-.045).scale(.03,.015,.03);
+
+            L_joints.child(0).setMatrix(this.matrix.left ).move( .005,0,-.045).scale(.0001,.0001,.0001);
+            R_joints.child(0).setMatrix(this.matrix.right).move(-.005,0,-.045).scale(.0001,.0001,.0001);
+
             L_joints.child(0).color(touchColor[this.pinch.left  = touchState(L_joints)]);
             R_joints.child(0).color(touchColor[this.pinch.right = touchState(R_joints)]);
+
 	    this.bend.left  = measureBend(jointMatrix.left);
 	    this.bend.right = measureBend(jointMatrix.right);
         } else 

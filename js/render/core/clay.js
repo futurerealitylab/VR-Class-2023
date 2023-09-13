@@ -1059,10 +1059,11 @@ let colors = [
    [1,1,1],     // white
    [1,0,0],     // red
    [1,.2,0],    // orange
-   [1,1,0],     // yellow
-   [0,1,0],     // green
-   [0,1,1],     // cyan
-   [.2,.2,1],   // blue
+   [1,.9,0],    // yellow
+   [0,.8,0],    // green
+   [0,.8,.6],   // cyan
+   [.2,.3,1],   // blue
+   [.3,,0,1],   // indigo
    [1,0,1],     // violet
    [.3,.1,.05], // brown
    [0,0,0],     // black
@@ -1073,11 +1074,16 @@ this.color = i => colors[i];
 let initMaterials = () => {
 materials = [];
 materials.black     = { ambient: [.0 ,.0 ,.0 ], diffuse: [.0 ,.0 ,.0 ], specular: [.0,.0,.0,20] };
-materials.blue      = { ambient: [.0 ,.0 ,.2 ], diffuse: [.0 ,.0 ,.8 ], specular: [.0,.0,.0,20] };
-materials.green     = { ambient: [.0 ,.2 ,.0 ], diffuse: [.0 ,.8 ,.0 ], specular: [.0,.0,.0,20] };
+materials.blue      = { ambient: [.04,.06,.2 ], diffuse: [.16,.24,.8 ], specular: [.0,.0,.0,20] };
+materials.cyan      = { ambient: [.0 ,.16,.12], diffuse: [.0 ,.64,.48], specular: [.0,.0,.0,20] };
+materials.green     = { ambient: [.0 ,.18,.0 ], diffuse: [.0 ,.64,.0 ], specular: [.0,.0,.0,20] };
+materials.indigo    = { ambient: [.06,.0 ,.2 ], diffuse: [.24,.0 ,.8 ], specular: [.0,.0,.0,20] };
+materials.orange    = { ambient: [.2 ,.04,.0 ], diffuse: [.8 ,.16,.0 ], specular: [.0,.0,.0,20] };
 materials.red       = { ambient: [.2 ,.0 ,.0 ], diffuse: [.8 ,.0 ,.0 ], specular: [.0,.0,.0,20] };
-materials.trueBlack = { ambient: [0,0,0]      , diffuse: [0,0,0]      , specular: [0,0,0,1]     };
+materials.trueBlack = { ambient: [0,0,0]      , diffuse: [0,0,0]      , specular: [.0,.0,.0, 1] };
+materials.violet    = { ambient: [.2 ,.0 ,.2 ], diffuse: [.8 ,.0 ,.8 ], specular: [.0,.0,.0,20] };
 materials.white     = { ambient: [.2 ,.2 ,.2 ], diffuse: [.8 ,.8 ,.8 ], specular: [.9,.9,.9,20] };
+materials.yellow    = { ambient: [.2 ,.18,.0 ], diffuse: [.8 ,.72,.0 ], specular: [.0,.0,.0,20] };
 
 this.defineMaterial = (id, ambient, diffuse, specular) =>
    materials[id] = { ambient: ambient, diffuse: diffuse, specular: specular };

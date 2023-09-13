@@ -36,7 +36,7 @@ export default () => {
          { name: "DemoWire"           , path: "./demoWire.js"           },
 */
          { name: "crayon"             , path: "./demoWirej.js"          },
-         { name: "grab"               , path: "./demoGrab3.js"          },
+         { name: "grab"               , path: "./demoGrab5.js"          },
       ]
    };
 }

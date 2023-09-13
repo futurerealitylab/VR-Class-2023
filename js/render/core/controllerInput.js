@@ -109,41 +109,30 @@ export function ControllerBeam(model, hand) {
                                 cg.mScale(label.getInfo().length/2,1,1)));
 }
 
-let wasL0Down = false, isL0Down;
-let wasL1Down = false, isL1Down;
-let wasR0Down = false, isR0Down;
-let wasR1Down = false, isR1Down;
+let buttonNames = [ 'Trigger', 'Thumb' ];
+let buttonPress = { left: [], right: [] };
+for (let hand in buttonPress)
+for (let button = 0 ; button < buttonNames.length ; button++)
+   buttonPress[hand].push(false);
 
 export let controllerEventTypes = () => {
-
-   let isL0Down = buttonState.left [0].pressed;
-   let isR0Down = buttonState.right[0].pressed;
-   let isL1Down = buttonState.left [1].pressed;
-   let isR1Down = buttonState.right[1].pressed;
-
    let eventTypes = [];
-
-   if (isL0Down && ! wasL0Down) eventTypes.push('leftTriggerPress');
-   if (isR0Down && ! wasR0Down) eventTypes.push('rightTriggerPress');
-   if (isL0Down               ) eventTypes.push('leftTriggerDrag');
-   if (isR0Down               ) eventTypes.push('rightTriggerDrag');
-   if (! isL0Down && wasL0Down) eventTypes.push('leftTriggerRelease');
-   if (! isR0Down && wasR0Down) eventTypes.push('rightTriggerRelease');
-
-   if (isL1Down && ! wasL1Down) eventTypes.push('leftThumbPress');
-   if (isR1Down && ! wasR1Down) eventTypes.push('rightThumbPress');
-   if (isL1Down               ) eventTypes.push('leftThumbDrag');
-   if (isR1Down               ) eventTypes.push('rightThumbDrag');
-   if (! isL1Down && wasL1Down) eventTypes.push('leftThumbRelease');
-   if (! isR1Down && wasR1Down) eventTypes.push('rightThumbRelease');
-
-   wasL0Down = isL0Down;
-   wasL1Down = isL1Down;
-   wasR0Down = isR0Down;
-   wasR1Down = isR1Down;
-
+   for (let hand in buttonPress)
+   for (let button = 0 ; button < buttonNames.length ; button++)
+      if (buttonState[hand][button]) {
+         let prefix = hand + buttonNames[button];
+         let wasDown = buttonPress[hand][button];
+         let isDown  = buttonState[hand][button].pressed;
+         if (isDown && ! wasDown) eventTypes.push(prefix + 'Press'  );
+         if (      isDown       ) eventTypes.push(prefix + 'Drag'   );
+         if (wasDown && ! isDown) eventTypes.push(prefix + 'Release');
+         buttonPress[hand][button] = isDown;
+      }
    return eventTypes;
 }
+
+let isL0Down, isR0Down, isL1Down, isR1Down;
+let wasL0Down, wasR0Down, wasL1Down, wasR1Down;
 
 export let controllerEventType = () => {
    let what = null;

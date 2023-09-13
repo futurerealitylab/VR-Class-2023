@@ -44,7 +44,7 @@ export class InlineViewerHelper {
     //this.theta = Math.PI;
     this.theta = 0;
     this.lookYaw = this.theta;
-    this.walkPosition = [-4*Math.sin(this.theta), 0, -4*Math.cos(this.theta)];
+    this.walkPosition = [-Math.sin(this.theta), 0, -Math.cos(this.theta)];
 
     this.lookPitch = 0;
     this.viewerHeight = 0;

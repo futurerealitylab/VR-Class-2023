@@ -12,7 +12,9 @@ import { Gltf2Node } from "../render/nodes/gltf2.js";
 export const init = async model => {
 
     let gltf1 = new Gltf2Node({ url: './media/gltf/box-gltf/box.gltf' });
-    let gltf2 = new Gltf2Node({ url: './media/gltf/sunflower/sunflower.gltf' });
+    let gltf2 = new Gltf2Node({ url: './media/gltf/buddha_statue_broken/scene.gltf' });
+
+   //  let gltf2 = new Gltf2Node({ url: './media/gltf/sunflower/sunflower.gltf' });
     let rotation1 = quat.create();
     let rotation2 = quat.create();
 
@@ -31,7 +33,7 @@ export const init = async model => {
 
        gltf1.rotation = rotation1;
 
-       gltf2.translation = [0, 1.5 + .5 * Math.sin(model.time * 10), 0];
+      //  gltf2.translation = [0, 1.5 + .5 * Math.sin(model.time * 10), 0];
        gltf2.rotation = rotation2;
     });
  }

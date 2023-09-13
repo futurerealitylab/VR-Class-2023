@@ -37,6 +37,7 @@ export default () => {
 */
          { name: "crayon"             , path: "./demoWirej.js"          },
          { name: "grab"               , path: "./demoGrab5.js"          },
+         { name: "DemoGLTF"           , path: "./demoGLTF.js"           },
       ]
    };
 }

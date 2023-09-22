@@ -1398,6 +1398,14 @@ export class Renderer {
        clay.handsWidget.update();
 
     if (lcb) {
+       lcb.isEnabled = ! window.handtracking;
+       rcb.isEnabled = ! window.handtracking;
+       if (! lcb.isEnabled) {
+          lcb.update();
+          rcb.update();
+          return;
+       }
+
        let updateCB = cb => {
           let m;
           if (window.handtracking)

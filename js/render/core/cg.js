@@ -199,8 +199,6 @@
          return mixFunction(arr[i], arr[n-1], (t - i/(n-1)) / (1 - i/(n-1)));
       }
       t = Math.max(0, Math.min(0.999, t));
-      if (n == 1)
-         return arr[0];
       let i = Math.floor((n-1) * t);
       let f = (n-1) * t - i;
       return mixFunction(arr[i], arr[i+1], f);

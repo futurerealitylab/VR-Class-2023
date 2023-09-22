@@ -78,6 +78,7 @@ export let getViews = (views) => {
 };
 
 export function ControllerBeam(model, hand) {
+   this.isEnabled = true;
    this.hand = hand;
    let bend = Math.PI/4;
    this.beam = model.add();
@@ -85,6 +86,10 @@ export function ControllerBeam(model, hand) {
                                        .move(0,0,-10.01)
                                        .scale(.001,.001,10);
    this.update = matrix => {
+      if (! this.isEnabled) {
+         this.beam.setMatrix(cg.mScale(0));
+         return;
+      }
       let m = matrix ? matrix : controllerMatrix[hand],
           update = (offset, fallback) =>
              this.beam.setMatrix(
@@ -94,7 +99,7 @@ export function ControllerBeam(model, hand) {
       if (hand == 'right') update(matrix ? [-.005,.01,-.03] : [-.0015,.014,0], [ .2,0,0]);
    }
    this.beamMatrix = () => cg.mMultiply(this.m, cg.mRotateX(-bend));
-   this.hitRect = m => cg.mHitRect(this.beamMatrix(), m);
+   this.hitRect = m => this.isEnabled ? cg.mHitRect(this.beamMatrix(), m) : null;
    this.projectOntoBeam = P => {
       let bm = this.beamMatrix();	// get controller beam matrix
       let o = bm.slice(12, 15);		// get origin of beam

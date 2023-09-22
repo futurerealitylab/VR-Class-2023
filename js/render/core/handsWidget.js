@@ -12,7 +12,8 @@ export function HandsWidget(widgets) {
 
     this.getMatrix = (hand, finger, joint) => jointMatrix[hand][5 * finger + joint].mat;
 
-    let hands = widgets.add();
+    let hands = widgets.add().color(.5,.25,.15).dull(1).opacity(.8);
+
     let L_joints = hands.add();
     let R_joints = hands.add();
 
@@ -31,7 +32,6 @@ export function HandsWidget(widgets) {
     }
 
     this.update = () => {
-        //let th = [.0115,.01,.01,.01,.0085];
         let th = [.01,.0085,.0085,.0085,.007];
         if(window.handtracking) {
             hands.identity();
@@ -47,11 +47,11 @@ export function HandsWidget(widgets) {
                }
                for (let i = 1 ; i < 5 ; i++) {
                   let nj = 5 * finger + i;
-                  L_joints.child(nj).setMatrix(jointMatrix.left [nj].mat).scale(th[finger]).color(leftColor).dull(1).opacity(.7);
-                  R_joints.child(nj).setMatrix(jointMatrix.right[nj].mat).scale(th[finger]).color(rightColor).dull(1).opacity(.7);
+                  L_joints.child(nj).setMatrix(jointMatrix.left [nj].mat).scale(th[finger]);
+                  R_joints.child(nj).setMatrix(jointMatrix.right[nj].mat).scale(th[finger]);
                   if (finger == 0 && i == 2 || i == 1) {
-                     L_joints.child(nj).scale(1,1,.001).color(0).dull(1).opacity(.7);
-                     R_joints.child(nj).scale(1,1,.001).color(0).dull(1).opacity(.7);
+                     L_joints.child(nj).scale(1,1,.001);
+                     R_joints.child(nj).scale(1,1,.001);
                   }
                   if (finger == 0 && i == 1) {
                      L_joints.child(nj).scale(0);
@@ -61,8 +61,6 @@ export function HandsWidget(widgets) {
                for (let i = 1 ; i < 4 ; i++) {
                   let nj = 5 * finger + i;
                   let nl = 4 * finger + i;
-                  L_links.child(nl).color(leftColor).dull(1).opacity(.7);
-                  R_links.child(nl).color(rightColor).dull(1).opacity(.7);
                   aim(L_links.child(nl), jointMatrix.left [nj].mat, jointMatrix.left [nj+1].mat);
                   aim(R_links.child(nl), jointMatrix.right[nj].mat, jointMatrix.right[nj+1].mat);
                   if (finger == 0 && i == 1) L_links.child(nl).scale(0);

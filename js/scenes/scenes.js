@@ -1,6 +1,8 @@
 import * as global from "../global.js";
 import { Gltf2Node } from "../render/nodes/gltf2.js";
 
+export let buddha = new Gltf2Node({ url: './media/gltf/buddha_statue_broken/scene.gltf' });
+
 export default () => {
    global.scene().addNode(new Gltf2Node({
       url: ""
@@ -35,9 +37,9 @@ export default () => {
          { name: "DemoTwoCubes"       , path: "./demoTwoCubes.js"       },
          { name: "DemoWire"           , path: "./demoWire.js"           },
 */
-         { name: "crayon"             , path: "./demoWirej.js"          },
+         { name: "crayon"             , path: "./demoDraw2.js"          },
          { name: "grab"               , path: "./demoGrab5.js"          },
-         { name: "DemoGLTF"           , path: "./demoGLTF.js"           },
+         { name: "statue"             , path: "./demoGLTF1.js"          },
       ]
    };
 }

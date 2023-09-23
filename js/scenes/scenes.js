@@ -40,6 +40,7 @@ export default () => {
          { name: "crayon"             , path: "./demoDraw2.js"          },
          { name: "grab"               , path: "./demoGrab7.js"          },
          { name: "statue"             , path: "./demoGLTF1.js"          },
+         { name: "sync"               , path: "./demoSync.js"           },
       ]
    };
 }

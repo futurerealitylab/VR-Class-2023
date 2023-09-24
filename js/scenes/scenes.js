@@ -37,10 +37,10 @@ export default () => {
          { name: "DemoTwoCubes"       , path: "./demoTwoCubes.js"       },
          { name: "DemoWire"           , path: "./demoWire.js"           },
 */
-         { name: "crayon"             , path: "./demoDraw2.js"          },
-         { name: "grab"               , path: "./demoGrab7.js"          },
+         { name: "crayon"             , path: "./demoDraw3.js"          },
+         { name: "grab"               , path: "./demoGrab8.js"          },
          { name: "statue"             , path: "./demoGLTF1.js"          },
-         { name: "sync"               , path: "./demoSync.js"           },
+         { name: "sync"               , path: "./demoSync1.js"          },
       ]
    };
 }

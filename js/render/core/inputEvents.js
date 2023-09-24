@@ -8,6 +8,7 @@ export function InputEvents(model) {
    this.onRelease = (hand, elapsed) => { console.log('onRelease', hand, elapsed); }
 
    let wasPinch = { left: false, right: false };
+   let pinchUp  = { left: 100, right: 100 };
    let handInfo = { left: {pressTime:-1}, right: {pressTime:-1} };
 
    this.update = () => {
@@ -26,12 +27,16 @@ export function InputEvents(model) {
       this.pos = {};
       if (window.handtracking) {
          for (let hand in handInfo) {
-	    this.pos[hand] = clay.handsWidget.getMatrix(hand, 1, 4).slice(12,15);
+	    this.pos[hand] = clay.handsWidget.getMatrix(hand,1,4).slice(12,15);
             let isPinch = clay.handsWidget.pinch[hand] == 1;
-            if (isPinch) this.pos[hand] = clay.handsWidget.getMatrix(hand,1,4).slice(12,15);
+/*
             if (isPinch && ! wasPinch[hand]) press(hand);
             if (wasPinch[hand] && ! isPinch) release(hand);
             wasPinch[hand] = isPinch;
+*/
+            if (isPinch && pinchUp[hand] > 1) press(hand);
+            if (pinchUp[hand] == 0 && ! isPinch) release(hand);
+            pinchUp[hand] = isPinch ? 0 : pinchUp[hand] + 1;
          }
       }
       else {

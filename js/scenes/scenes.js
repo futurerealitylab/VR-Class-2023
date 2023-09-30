@@ -1,12 +1,14 @@
 import * as global from "../global.js";
 import { Gltf2Node } from "../render/nodes/gltf2.js";
 
-export let buddha = new Gltf2Node({ url: './media/gltf/buddha_statue_broken/scene.gltf' });
+export let buddha;
 
 export default () => {
    global.scene().addNode(new Gltf2Node({
       url: ""
    })).name = "backGround";
+
+   buddha = new Gltf2Node({ url: './media/gltf/buddha_statue_broken/scene.gltf' });
 
    return {
       enableSceneReloading: false,

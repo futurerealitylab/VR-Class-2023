@@ -11,7 +11,8 @@ export class InputController {
       this.lookPitch = 0;
       this.viewerHeight = 0;
 
-      this.walkPosition = [-Math.sin(this.theta), 0, -Math.cos(this.theta)];
+      //this.walkPosition = [-Math.sin(this.theta), 0, -Math.cos(this.theta)];
+      this.walkPosition = [-.5 * Math.sin(this.theta), 0, -.5 * Math.cos(this.theta)];
   
       this.baseRefSpace = referenceSpace;
       this.refSpace = referenceSpace;

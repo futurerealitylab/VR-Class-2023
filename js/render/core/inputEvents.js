@@ -24,16 +24,11 @@ export function InputEvents(model) {
          handInfo[hand].pressTime = -1;
       }
 
-      this.pos = {};
+      pos = {};
       if (window.handtracking) {
          for (let hand in handInfo) {
-	    this.pos[hand] = clay.handsWidget.getMatrix(hand,1,4).slice(12,15);
+	    pos[hand] = clay.handsWidget.getMatrix(hand,1,4).slice(12,15);
             let isPinch = clay.handsWidget.pinch[hand] == 1;
-/*
-            if (isPinch && ! wasPinch[hand]) press(hand);
-            if (wasPinch[hand] && ! isPinch) release(hand);
-            wasPinch[hand] = isPinch;
-*/
             if (isPinch && pinchUp[hand] > 1) press(hand);
             if (pinchUp[hand] == 0 && ! isPinch) release(hand);
             pinchUp[hand] = isPinch ? 0 : pinchUp[hand] + 1;
@@ -41,8 +36,8 @@ export function InputEvents(model) {
       }
       else {
          for (let hand in handInfo)
-            this.pos[hand] = cg.mTransform(cg.mMultiply(controllerMatrix[hand],
-                                                        cg.mInverse(model.getMatrix())),
+            pos[hand] = cg.mTransform(cg.mMultiply(controllerMatrix[hand],
+                                                   cg.mInverse(model.getMatrix())),
                                                         [hand=='left'?.01:-.01,-.05,-.05]);
          let eventTypes = controllerEventTypes();
          for (let i = 0 ; i < eventTypes.length ; i++)
@@ -57,6 +52,29 @@ export function InputEvents(model) {
       for (let hand in handInfo)
          if (handInfo[hand].pressTime >= 0)
             this.onDrag(hand, model.time - handInfo[hand].pressTime);
+
+      let LT = handInfo.left.pressTime;
+      let RT = handInfo.right.pressTime;
+      if (LT > 0 && RT > 0 && model.time > LT + 3 && model.time > RT + 3) {
+         let L = pos.left;
+         let R = pos.right;
+         if (Math.abs(L[1] - R[1]) < .01) {
+            let X = cg.subtract(R, L);
+            X = cg.normalize([X[0], 0, X[2]]);
+            let Y = [0,1,0];
+            let Z = cg.cross(X, Y);
+            let T = cg.mix(L, R, .5);
+            M = [X[0],X[1],X[2],0, Y[0],Y[1],Y[2],0, Z[0],Z[1],Z[2],0, T[0],0,T[2],1];
+         }
+      }
    }
+
+   let pos = {};
+   this.pos = hand => cg.mTransform(cg.mInverse(M), pos[hand]);
+
+   this.adjustToWorld = () => M;
+
+   let M = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+
 }
 

@@ -216,23 +216,38 @@ export const init = async model => {
 
    let inputEvents = new InputEvents(model);
 
+   let isLeftDown = false, isRightDown = false;
+
    inputEvents.onPress = hand => {
+      if (hand == 'left') {
+         isLeftDown = true;
+      }
       if (hand == 'right') {
+         isRightDown = true;
          strokes.push([]);
       }
    }
 
    inputEvents.onDrag = hand => {
       if (hand == 'right') {
-         if (strokes.length > 0) {
-            strokes[strokes.length-1].push(inputEvents.pos.right);
+         if (! isLeftDown && strokes.length > 0) {
+            strokes[strokes.length-1].push(inputEvents.pos('right'));
             buildWires();
          }
       }
    }
 
    inputEvents.onRelease = hand => {
+      if (hand == 'left') {
+         isLeftDown = false;
+         if (strokes.length > 0 && strokes[0].length > 1) {
+            ST = matchCurves.recognize(strokes);
+            mode = 'morph';
+            timer = 0;
+         }
+      }
       if (hand == 'right') {
+         isRightDown = false;
          if (mode == 'morph' || strokes.length > 0 && strokes[strokes.length-1].length < 10) {
             ST = null;
             mode = null;
@@ -240,19 +255,14 @@ export const init = async model => {
             buildWires();
          }
       }
-      if (hand == 'left') {
-         if (strokes.length > 0 && strokes[0].length > 1) {
-            ST = matchCurves.recognize(strokes);
-            mode = 'morph';
-            timer = 0;
-         }
-      }
    }
 
    model.animate(() => {
-      helpMenu.identity().move(.65,1.5,.5).turnY(-.8).scale(.25,.25,.0001);
-
       inputEvents.update();
+
+      helpMenu.setMatrix(inputEvents.adjustToWorld())
+              .move(.65,1.5,.5).turnY(-.8).scale(.25,.25,.0001);
+      wires.setMatrix(inputEvents.adjustToWorld());
 
       if (ST && mode == 'morph') {
          timer += 1.8 * model.deltaTime;

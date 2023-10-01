@@ -28,7 +28,7 @@ export const init = async model => {
       '#400000',
    ];
 
-   let helpMenu = model.add('cube').texture(() => {
+   let helpMenu = model.add('cube').move(.65,1.5,.5).turnY(-.8).scale(.25,.25,.0001).texture(() => {
       g2.setColor('#ff80ff80');
       g2.fillRect(0,0,1,1);
       g2.setColor('#ff80ff');
@@ -259,10 +259,6 @@ export const init = async model => {
 
    model.animate(() => {
       inputEvents.update();
-
-      helpMenu.setMatrix(inputEvents.adjustToWorld())
-              .move(.65,1.5,.5).turnY(-.8).scale(.25,.25,.0001);
-      wires.setMatrix(inputEvents.adjustToWorld());
 
       if (ST && mode == 'morph') {
          timer += 1.8 * model.deltaTime;

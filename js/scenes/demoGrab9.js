@@ -95,8 +95,7 @@ export const init = async model => {
          if (balls[i].state == 'unused')
             model.child(i).scale(0);
          else
-            model.child(i).setMatrix(inputEvents.adjustToWorld())
-	                  .move(balls[i].pos).scale(radius * (balls[i].state == 'busy' ? .7 : 1));
+            model.child(i).identity().move(balls[i].pos).scale(radius * (balls[i].state == 'busy' ? .7 : 1));
    });
 }
 

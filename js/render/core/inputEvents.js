@@ -36,9 +36,13 @@ export function InputEvents(model) {
       }
       else {
          for (let hand in handInfo)
+/*
             pos[hand] = cg.mTransform(cg.mMultiply(controllerMatrix[hand],
                                                    cg.mInverse(model.getMatrix())),
                                                         [hand=='left'?.01:-.01,-.05,-.05]);
+*/
+            pos[hand] = cg.mTransform(controllerMatrix[hand], [hand=='left'?.01:-.01,-.05,-.05]);
+
          let eventTypes = controllerEventTypes();
          for (let i = 0 ; i < eventTypes.length ; i++)
             switch (eventTypes[i]) {
@@ -64,17 +68,15 @@ export function InputEvents(model) {
             let Y = [0,1,0];
             let Z = cg.cross(X, Y);
             let T = cg.mix(L, R, .5);
-            M = [X[0],X[1],X[2],0, Y[0],Y[1],Y[2],0, Z[0],Z[1],Z[2],0, T[0],0,T[2],1];
+            let M = [X[0],X[1],X[2],0, Y[0],Y[1],Y[2],0, Z[0],Z[1],Z[2],0, T[0],0,T[2],1];
+	    model.setMatrix(M);
+	    IM = cg.mInverse(M);
          }
       }
    }
 
    let pos = {};
-   this.pos = hand => cg.mTransform(cg.mInverse(M), pos[hand]);
-
-   this.adjustToWorld = () => M;
-
-   let M = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
-
+   let IM = [1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1];
+   this.pos = hand => cg.mTransform(IM, pos[hand]);
 }
 

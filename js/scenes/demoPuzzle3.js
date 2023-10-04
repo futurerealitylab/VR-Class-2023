@@ -1,20 +1,16 @@
 import * as cg from "../render/core/cg.js";
 import { InputEvents } from "../render/core/InputEvents.js";
 
-window.puzzle = [];
-for (let n = 0 ; n < 27 ; n++)
-   puzzle.push(n==0||n==2||n==6||n==8||n==18||n==20||n==24||n==26 ? 2 : n!=13 ? 1 : 0);
+window.puzzle = [
+   1,1,1, 1,2,1, 1,2,1,
+   2,1,2, 2,0,2, 1,1,1,
+   1,1,1, 1,2,1, 1,2,1,
+];
 
 let swap = (a,b) => {
    let tmp = puzzle[a];
    puzzle[a] = puzzle[b];
    puzzle[b] = tmp;
-}
-
-for (let k = 0 ; k < 100 ; k++) {
-   let a = 26.9 * (.5 + .5 * Math.sin(k * 31415)) >> 0;
-   let b = 26.9 * (.5 + .5 * Math.sin(k * 92653)) >> 0;
-   swap(a, b);
 }
 
 let i = n => n % 3 - 1;

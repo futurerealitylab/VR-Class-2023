@@ -1,9 +1,6 @@
 import * as cg from "../render/core/cg.js";
 import { InputEvents } from "../render/core/inputEvents.js";
 
-if (! window.server)
-   window.server = new Server();
-
 let Ball = function(p) {
    this.pos = p;
    this.state = 'free';

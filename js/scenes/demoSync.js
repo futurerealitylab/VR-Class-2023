@@ -1,8 +1,5 @@
 import { InputEvents } from "../render/core/InputEvents.js";
 
-if (! window.server)
-   window.server = new Server();
-
 window.sync = { left: false, right: false };
 
 let setSync = (hand, value) => {

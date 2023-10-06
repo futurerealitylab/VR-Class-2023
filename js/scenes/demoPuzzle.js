@@ -1,6 +1,6 @@
+import { InputEvents } from "../render/core/InputEvents.js";
 import * as cg from "../render/core/cg.js";
 import { g2 } from "../util/g2.js";
-import { InputEvents } from "../render/core/InputEvents.js";
 
 window.puzzle = [
    1,1,1, 1,2,1, 1,2,1,
@@ -20,13 +20,18 @@ let isSolved = () => {
    return true;
 }
 
+let find0 = () => {
+   for (let n = 0 ; n < 27 ; n++)
+      if (puzzle[n] == 0)
+         return n;
+   return 0;
+}
+
 let createNewPuzzle = () => {
-   for (let k = 0 ; k < 100 ; k++) {
-      if (k >= 10 && puzzle[13] == 0)
-         return;
+   for (let k = 0 ; k < 100 ; k++)
       swap(26.9 * Math.random() >> 0,
            26.9 * Math.random() >> 0);
-   }
+   swap(find0(), 13);
 }
 
 let swap = (a,b) => {
@@ -75,9 +80,9 @@ empty space next to it.
       g2.setColor('#000000');
       g2.textHeight(.04);
       g2.fillText(
-`Congratulations,
-you did it!
+`CONGRATULATIONS!!!
 
+YOU SOLVED IT!
 
 Click on any ball
 to start a new game.
@@ -102,11 +107,7 @@ to start a new game.
          return;
       }
 
-      let N = 0;
-      for (let n = 0 ; n < 27 ; n++)
-         if (puzzle[n] == 0)
-            N = n;
-
+      let N = find0();
       let n = findBox(hand);
       if (n >= 0) {
          let a = i(n)-i(N), b = j(n)-j(N), c = k(n)-k(N);

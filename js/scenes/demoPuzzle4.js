@@ -128,8 +128,8 @@ to start a new game.
       doneMenu.identity().scale(isSolved() ? 1 : 0);
       for (let n = 0 ; n < 27 ; n++)
          model.child(n).identity().move(B[n]).scale(puzzle[n]==0 ? 0 : .03)
-	                                     .color(nh.left==n || nh.right==n ? 'white'
-					            : puzzle[n]==1 ? 'cyan' : 'red');
+	                                     .color(nh.left==n || nh.right==n ? puzzle[n]==2 ? [1,0,0] : [0,.5,1]
+	                                                                      : puzzle[n]==2 ? [.5,0,0] : [0,.25,.5]);
    });
 }
 

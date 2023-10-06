@@ -8,6 +8,27 @@ window.puzzle = [
    1,1,1, 1,2,1, 1,2,1,
 ];
 
+let isSolved = () => {
+   let solution = [
+      2,1,2, 1,1,1, 2,1,2,
+      1,1,1, 1,0,1, 1,1,1,
+      2,1,2, 1,1,1, 2,1,2,
+   ];
+   for (let n = 0 ; n < puzzle.length ; n++)
+      if (puzzle[n] != solution[n])
+         return false;
+   return true;
+}
+
+let createNewPuzzle = () => {
+   for (let k = 0 ; k < 100 ; k++) {
+      if (k >= 10 && puzzle[13] == 0)
+         return;
+      swap(26.9 * Math.random() >> 0,
+           26.9 * Math.random() >> 0);
+   }
+}
+
 let swap = (a,b) => {
    let tmp = puzzle[a];
    puzzle[a] = puzzle[b];
@@ -27,18 +48,37 @@ export const init = async model => {
    for (let n = 0 ; n < 27 ; n++)
       model.add('sphere');
 
-   let helpMenu = model.add('cube').move(0,1.3,0).scale(.25,.25,.0001).texture(() => {
+   let helpMenu = model.add();
+   let doneMenu = model.add();
+
+   helpMenu.add('cube').move(0,1.3,0).scale(.25,.25,.0001).texture(() => {
       g2.setColor('#ffffff');
       g2.fillRect(.2,.3,.6,.4);
       g2.setColor('#000000');
-      g2.textHeight(.05);
+      g2.textHeight(.04);
       g2.fillText(
-`Goal: Move the 8 red
-balls into the corners.
+`Goal: Move the 8 red balls
+into the corners, with the
+empty space in the middle.
 
 To play: Click on a ball
 to move it into an
 empty space next to it.
+`, .5, .625, 'center');
+   });
+
+   doneMenu.add('cube').move(0,1.3,0).scale(.25,.25,.0001).texture(() => {
+      g2.setColor('#ffffff');
+      g2.fillRect(.2,.3,.6,.4);
+      g2.setColor('#000000');
+      g2.textHeight(.04);
+      g2.fillText(
+`Congratulations,
+you did it!
+
+
+Click on any ball
+to start a new game.
 `, .5, .625, 'center');
    });
 
@@ -54,6 +94,12 @@ empty space next to it.
    }
 
    inputEvents.onPress = hand => {
+      if (isSolved()) {
+         createNewPuzzle();
+         server.broadcastGlobal('puzzle');
+         return;
+      }
+
       let N = 0;
       for (let n = 0 ; n < 27 ; n++)
          if (puzzle[n] == 0)
@@ -70,6 +116,8 @@ empty space next to it.
    model.animate(() => {
       puzzle = server.synchronize('puzzle');
       inputEvents.update();
+      helpMenu.identity().scale(isSolved() ? 0 : 1);
+      doneMenu.identity().scale(isSolved() ? 1 : 0);
       for (let n = 0 ; n < 27 ; n++)
          model.child(n).identity().move(B[n]).scale(puzzle[n]==0 ? 0 : .03)
 	                                     .color(puzzle[n]==1 ? 'cyan' : 'red');

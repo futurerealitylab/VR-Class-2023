@@ -39,6 +39,8 @@ let i = n => n % 3 - 1;
 let j = n => (n/3>>0) % 3 - 1;
 let k = n => (n/9>>0) - 1;
 
+let nh = {left: -1, right: -1};
+
 let B = [];
 for (let n = 0 ; n < 27 ; n++)
    B.push([.1 * i(n), .1 * j(n) + 1, .1 * k(n)]);
@@ -93,7 +95,7 @@ to start a new game.
       return -1;
    }
 
-   inputEvents.onPress = hand => {
+   inputEvents.onRelease = hand => {
       if (isSolved()) {
          createNewPuzzle();
          server.broadcastGlobal('puzzle');
@@ -105,13 +107,19 @@ to start a new game.
          if (puzzle[n] == 0)
             N = n;
 
-      let n = findBox(hand), a = i(n)-i(N), b = j(n)-j(N), c = k(n)-k(N);
-      if (a*a + b*b + c*c == 1) {
-         swap(n, N);
-         server.broadcastGlobalSlice('puzzle', n, n+1);
-         server.broadcastGlobalSlice('puzzle', N, N+1);
+      let n = findBox(hand);
+      if (n >= 0) {
+         let a = i(n)-i(N), b = j(n)-j(N), c = k(n)-k(N);
+         if (a*a + b*b + c*c == 1) {
+            swap(n, N);
+            server.broadcastGlobalSlice('puzzle', n, n+1);
+            server.broadcastGlobalSlice('puzzle', N, N+1);
+         }
       }
    }
+
+   inputEvents.onDrag = hand => nh[hand] = findBox(hand);
+   inputEvents.onMove = hand => nh[hand] = findBox(hand);
 
    model.animate(() => {
       puzzle = server.synchronize('puzzle');
@@ -120,7 +128,8 @@ to start a new game.
       doneMenu.identity().scale(isSolved() ? 1 : 0);
       for (let n = 0 ; n < 27 ; n++)
          model.child(n).identity().move(B[n]).scale(puzzle[n]==0 ? 0 : .03)
-	                                     .color(puzzle[n]==1 ? 'cyan' : 'red');
+	                                     .color(nh.left==n || nh.right==n ? 'white'
+					            : puzzle[n]==1 ? 'cyan' : 'red');
    });
 }
 

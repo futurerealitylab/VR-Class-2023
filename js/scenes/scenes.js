@@ -8,8 +8,6 @@ export default () => {
       url: ""
    })).name = "backGround";
 
-   buddha = new Gltf2Node({ url: './media/gltf/buddha_statue_broken/scene.gltf' });
-
    return {
       enableSceneReloading: false,
       scenes: [ 
@@ -20,8 +18,6 @@ export default () => {
          { name: "DemoControllerBeam" , path: "./demoControllerBeam.js" },
          { name: "DemoControllers"    , path: "./demoControllers.js"    },
          { name: "DemoCroquet"        , path: "./demoCroquet.js"        },
-         { name: "DemoCroquet1"       , path: "./demoCroquet1.js"       },
-         { name: "DemoGLTF"           , path: "./demoGLTF.js"           },
          { name: "DemoHands"          , path: "./demoHands.js"          },
          { name: "DemoHUD"            , path: "./demoHUD.js"            },
          { name: "DemoIntersect"      , path: "./demoIntersect.js"      },
@@ -39,11 +35,11 @@ export default () => {
          { name: "DemoTwoCubes"       , path: "./demoTwoCubes.js"       },
          { name: "DemoWire"           , path: "./demoWire.js"           },
 */
-         { name: "crayon"             , path: "./demoDraw3.js"          },
-         { name: "grab"               , path: "./demoGrabA.js"          },
-         { name: "statue"             , path: "./demoGLTF1.js"          },
+         { name: "crayon"             , path: "./demoDraw.js"           },
+         { name: "grab"               , path: "./demoGrab.js"           },
+         { name: "statue"             , path: "./demoGLTF.js"           },
          { name: "sync"               , path: "./demoSync.js"           },
-         { name: "puzzle"             , path: "./demoPuzzle4.js"        },
+         { name: "puzzle"             , path: "./demoPuzzle.js"         },
       ]
    };
 }

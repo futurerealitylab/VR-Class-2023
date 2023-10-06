@@ -6,6 +6,7 @@ export function InputEvents(model) {
    this.onPress   = hand => { console.log('onPress', hand); }
    this.onDrag    = (hand, elapsed) => { console.log('onDrag', hand, elapsed); }
    this.onRelease = (hand, elapsed) => { console.log('onRelease', hand, elapsed); }
+   this.onMove    = (hand, elapsed) => { console.log('onMove', hand, elapsed); }
 
    let wasPinch = { left: false, right: false };
    let pinchUp  = { left: 100, right: 100 };
@@ -36,11 +37,6 @@ export function InputEvents(model) {
       }
       else {
          for (let hand in handInfo)
-/*
-            pos[hand] = cg.mTransform(cg.mMultiply(controllerMatrix[hand],
-                                                   cg.mInverse(model.getMatrix())),
-                                                        [hand=='left'?.01:-.01,-.05,-.05]);
-*/
             pos[hand] = cg.mTransform(controllerMatrix[hand], [hand=='left'?.01:-.01,-.05,-.05]);
 
          let eventTypes = controllerEventTypes();
@@ -56,6 +52,8 @@ export function InputEvents(model) {
       for (let hand in handInfo)
          if (handInfo[hand].pressTime >= 0)
             this.onDrag(hand, model.time - handInfo[hand].pressTime);
+         else
+            this.onMove(hand, model.time - handInfo[hand].pressTime);
 
       let LT = handInfo.left.pressTime;
       let RT = handInfo.right.pressTime;

@@ -43,7 +43,7 @@ export default () => {
          { name: "grab"               , path: "./demoGrabA.js"          },
          { name: "statue"             , path: "./demoGLTF1.js"          },
          { name: "sync"               , path: "./demoSync.js"           },
-         { name: "puzzle"             , path: "./demoPuzzle3.js"        },
+         { name: "puzzle"             , path: "./demoPuzzle4.js"        },
       ]
    };
 }

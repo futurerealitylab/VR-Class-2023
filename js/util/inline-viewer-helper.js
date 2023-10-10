@@ -204,13 +204,25 @@ export class InlineViewerHelper {
         // console.log("move back");
         this.walkPosition[1] -= WALK_SPEED * deltaTime;
       }
+      let rotateYWalkPosition = sgn => {
+	   let x = this.walkPosition[0];
+	   let z = this.walkPosition[2];
+	   let r = Math.sqrt(x*x + z*z);
+	   let theta = Math.atan2(x, z) + sgn * WALK_SPEED * deltaTime;
+	   this.walkPosition[0] = r * Math.sin(theta);
+	   this.walkPosition[2] = r * Math.cos(theta);
+      }
       if (keyboardInput.keyIsDown(keyboardInput.KEY_LEFT)) {
         // console.log("turn left");
         this.lookYaw += WALK_SPEED * deltaTime;
+	if (this._isShiftKeyDown)
+	   rotateYWalkPosition(1);
       }
       if (keyboardInput.keyIsDown(keyboardInput.KEY_RIGHT)) {
         // console.log("turn right");
         this.lookYaw -= WALK_SPEED * deltaTime;
+	if (this._isShiftKeyDown)
+	   rotateYWalkPosition(-1);
       }
       this.dirty = true;
     }
